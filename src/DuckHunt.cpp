@@ -10,15 +10,14 @@
 #include "Shape.hpp"
 #include "Camera.hpp"
 #include "World.hpp"
-#include "Solar.hpp"
 
 GLint winWidth = 800, winHeight = 800;
 
 // move the view setting to camera
-GLfloat xeye = 3.0, yeye = 3.0, zeye = 7.0;  //  Viewing-coordinate origin.
-GLfloat xref = 0.0, yref = 0.0, zref = 0.0;  //  Look-at point.
-GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0;        //  View up vector.
-GLfloat vangle = 40.0, dnear = 1.0, dfar = 10.0;
+//GLfloat xeye = 3.0, yeye = 3.0, zeye = 7.0;  //  Viewing-coordinate origin.
+//GLfloat xref = 0.0, yref = 0.0, zref = 0.0;  //  Look-at point.
+//GLfloat Vx = 0.0, Vy = 1.0, Vz = 0.0;        //  View up vector.
+//GLfloat vangle = 40.0, dnear = 1.0, dfar = 10.0;
 
 // temp share variable
 GLfloat theta = 0.0;
@@ -61,16 +60,21 @@ GLuint texture[3];
 
 
 void display(void) {
-	glBegin(GL_LINES);
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex2f(-winWidth / 4, 0.0);
-	glVertex2f(winWidth / 4, 0.0);
+	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(-winWidth / 2, winWidth / 2, -winHeight / 2, winHeight / 2);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0, 0.0, 0.0, 1.0); // Set display-window color to black
 
+	// Green in the background (needs to be covered by texture of duck hunt)
 	glColor3f(0.0, 1.0, 0.0);
+    glBegin(GL_POLYGON);
+    glVertex2f(winWidth / 2, 0.0);
+    glVertex2f(winWidth / 2, winHeight / 2);
+    glVertex2f(-winWidth / 2, winHeight / 2);
+    glVertex2f(-winWidth / 2, 0.0);
+    glEnd();
 
-	glVertex2f(0.0, -winHeight / 4);
-	glVertex2f(0.0, winHeight / 4);
-	glEnd();
 
 	glFlush();
 	glutSwapBuffers();
