@@ -11,7 +11,7 @@ Camera::Camera() {
 	yref = 0.0;
 	zref = 0.0;
 	vangle = 40.0;
-	dnear = 1.0;
+	dnear = 0.0;
 	dfar  = 10.0;
 }
 

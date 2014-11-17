@@ -44,6 +44,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.libs.138624217" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="freeglut"/>
+									<listOptionValue builtIn="false" value="glaux"/>
 									<listOptionValue builtIn="false" value="glu32"/>
 									<listOptionValue builtIn="false" value="opengl32"/>
 									<listOptionValue builtIn="false" value="winmm"/>

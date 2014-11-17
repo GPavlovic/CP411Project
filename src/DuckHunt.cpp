@@ -58,33 +58,76 @@ GLuint programObject; // GLSL object
 
 GLuint texture[3];
 
+bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
+	if (!strFileName)
+		return false;
+	AUX_RGBImageRec *pBitMap = auxDIBImageLoad(strFileName);
+	if (pBitMap == NULL)
+		exit(0);
+	glGenTextures(1, &textureArray[ID]);
+	glBindTexture(GL_TEXTURE_2D, textureArray[ID]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, pBitMap->sizeX, pBitMap->sizeY, 0, GL_RGB,
+	GL_UNSIGNED_BYTE, pBitMap->data);
+	return true;
+}
 
 void display(void) {
 	glLoadIdentity();
 	glMatrixMode(GL_PROJECTION);
-	gluOrtho2D(-winWidth / 2, winWidth / 2, -winHeight / 2, winHeight / 2);
+	gluOrtho2D(-winWidth / 2, winWidth / 2, -winHeight / 4, 3 * winHeight / 4);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(0.0, 0.0, 0.0, 1.0); // Set display-window color to black
 
-	// Green in the background (needs to be covered by texture of duck hunt)
+	// Background of the sky
 	glColor3f(0.68, 0.85, 0.9);
     glBegin(GL_POLYGON);
     glVertex3f(winWidth / 2, 0.0, 0.0);
-    glVertex3f(winWidth / 2, winHeight / 2, 0.0);
-    glVertex3f(-winWidth / 2, winHeight / 2, 0.0);
+    glVertex3f(winWidth / 2, 3 * winHeight / 4, 0.0);
+    glVertex3f(-winWidth / 2, 3 * winHeight / 4, 0.0);
     glVertex3f(-winWidth / 2, 0.0, 0.0);
     glEnd();
 
-    // Green rectangle for the grass texture from original duck hunt
-    glColor3f(0.0, 1.0, 0.0);
-    glBegin(GL_POLYGON);
-	glVertex3f(winWidth / 2, 0.0, 1.0);
-	glVertex3f(winWidth / 2, winHeight / 8, 1.0);
-	glVertex3f(-winWidth / 2, winHeight / 8, 1.0);
-	glVertex3f(-winWidth / 2, 0.0, 1.0);
+    // The tree
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, 1.71 * winWidth / 4, 0.2);
+	glTexCoord2f(1.0, 1.0); glVertex3f(-winWidth / 4, 1.71 * winWidth / 4, 0.2);
+	glTexCoord2f(1.0, 0.0); glVertex3f(-winWidth / 4, 0.0, 0.2);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-winWidth / 2, 0.0, 0.2);
 	glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 
-	// The ground of the original duck hunt
+	// Texture of the grass
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	// Left side of the screen grass
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, winHeight / 8 + 20, 0.2);
+	glTexCoord2f(1.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.2);
+	glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, 0.2);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-winWidth / 2, 0.0, 0.2);
+	glEnd();
+	// Right side of the screen grass
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.2);
+	glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, winHeight / 8 + 20, 0.2);
+	glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 0.0, 0.2);
+	glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.2);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+
+	// The ground colour of original duck hunt
 	glColor3f(0.55, 0.54, 0.0);
 	glBegin(GL_POLYGON);
 	glVertex3f(winWidth / 2, 0.0, 1.0);
@@ -131,7 +174,7 @@ void init(void) {
 
 	myWorld.myLight->SetLight(1.8, 1.8, 1.5, 1.0);
 
-	myEye.SetCamera(3.0, 3.0, 7.0, 0, 1, 0, 0, 0, 0, 40.0, 1.0, 10.0);
+	myEye.SetCamera(3.0, 3.0, 7.0, 0, 1, 0, 0, 0.0, 0, 20.0, 1.0, 10.0);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);  // Set display-window color to black
 	glMatrixMode(GL_PROJECTION);
@@ -150,7 +193,8 @@ void init(void) {
 	// read and load shader here
 
 	// load texture here for the world, weapons, and ducks
-
+	loadbmp(texture, "textures/ground.bmp", 0);
+	loadbmp(texture, "textures/tree.bmp", 1);
 
 }
 
