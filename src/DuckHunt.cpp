@@ -67,14 +67,31 @@ void display(void) {
 	glClearColor(0.0, 0.0, 0.0, 1.0); // Set display-window color to black
 
 	// Green in the background (needs to be covered by texture of duck hunt)
-	glColor3f(0.0, 1.0, 0.0);
+	glColor3f(0.68, 0.85, 0.9);
     glBegin(GL_POLYGON);
-    glVertex2f(winWidth / 2, 0.0);
-    glVertex2f(winWidth / 2, winHeight / 2);
-    glVertex2f(-winWidth / 2, winHeight / 2);
-    glVertex2f(-winWidth / 2, 0.0);
+    glVertex3f(winWidth / 2, 0.0, 0.0);
+    glVertex3f(winWidth / 2, winHeight / 2, 0.0);
+    glVertex3f(-winWidth / 2, winHeight / 2, 0.0);
+    glVertex3f(-winWidth / 2, 0.0, 0.0);
     glEnd();
 
+    // Green rectangle for the grass texture from original duck hunt
+    glColor3f(0.0, 1.0, 0.0);
+    glBegin(GL_POLYGON);
+	glVertex3f(winWidth / 2, 0.0, 1.0);
+	glVertex3f(winWidth / 2, winHeight / 8, 1.0);
+	glVertex3f(-winWidth / 2, winHeight / 8, 1.0);
+	glVertex3f(-winWidth / 2, 0.0, 1.0);
+	glEnd();
+
+	// The ground of the original duck hunt
+	glColor3f(0.55, 0.54, 0.0);
+	glBegin(GL_POLYGON);
+	glVertex3f(winWidth / 2, 0.0, 1.0);
+	glVertex3f(winWidth / 2, -winHeight / 2, 1.0);
+	glVertex3f(-winWidth / 2, -winHeight / 2, 1.0);
+	glVertex3f(-winWidth / 2, 0.0, 1.0);
+	glEnd();
 
 	glFlush();
 	glutSwapBuffers();
