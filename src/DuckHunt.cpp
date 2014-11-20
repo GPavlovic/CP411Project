@@ -189,9 +189,6 @@ void init(void) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glShadeModel(GL_SMOOTH);
 
-
-	// read and load shader here
-
 	// load texture here for the world, weapons, and ducks
 	loadbmp(texture, "textures/ground.bmp", 0);
 	loadbmp(texture, "textures/tree.bmp", 1);
