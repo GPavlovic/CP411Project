@@ -64,6 +64,7 @@ bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	AUX_RGBImageRec *pBitMap = auxDIBImageLoad(strFileName);
 	if (pBitMap == NULL)
 		exit(0);
+
 	glGenTextures(1, &textureArray[ID]);
 	glBindTexture(GL_TEXTURE_2D, textureArray[ID]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
