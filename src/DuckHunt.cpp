@@ -10,6 +10,7 @@
 #include "Shape.hpp"
 #include "Camera.hpp"
 #include "World.hpp"
+#include "lodepng.h"
 
 GLint winWidth = 800, winHeight = 800;
 
@@ -57,6 +58,8 @@ World myWorld;
 GLuint programObject; // GLSL object
 
 GLuint texture[3];
+vector<unsigned char> texture2[2];
+
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	if (!strFileName)
@@ -93,9 +96,9 @@ void display(void) {
     // TODO: Fix the tree
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, 1.71 * winWidth / 4, 0.2);
 	glTexCoord2f(1.0, 1.0); glVertex3f(-winWidth / 4, 1.71 * winWidth / 4, 0.2);
@@ -108,9 +111,9 @@ void display(void) {
     // TODO: Fix the bush
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0, 1.0); glVertex3f((winWidth / 2) - 112, 136, 0.2);
 	glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, 136, 0.2);
@@ -123,8 +126,8 @@ void display(void) {
 	// Texture of the grass
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	// Left side of the screen grass
 	glBegin(GL_QUADS);
@@ -207,8 +210,13 @@ void init(void) {
 
 	// load texture here for the world, weapons, and ducks
 	loadbmp(texture, "textures/ground.bmp", 0);
-	loadbmp(texture, "textures/tree.bmp", 1);
-	loadbmp(texture, "textures/bush.bmp", 2);
+//	loadbmp(texture, "textures/tree.bmp", 1);
+//	loadbmp(texture, "textures/bush.bmp", 2);
+
+	// Load file and decode image.
+	unsigned width, height;
+	lodepng::decode(texture2[0], width, height, "textures/pngs/tree.png");
+	//texture[2] = image;
 
 }
 
