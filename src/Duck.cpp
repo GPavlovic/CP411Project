@@ -9,4 +9,5 @@ Duck::Duck() {
 
 void Duck::draw(){
 	// Draw the texture at the location, with the given action it is performing (wingsUp, wingsDown, shot)
+	// Do not draw if shot = 1
 }

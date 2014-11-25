@@ -1,4 +1,3 @@
-
 #include <GL/glew.h>
 #include <GL/glut.h>
 
@@ -11,6 +10,7 @@
 #include "Camera.hpp"
 #include "World.hpp"
 #include "lodepng.h"
+#include "Duck.hpp"
 
 GLint winWidth = 800, winHeight = 800;
 
@@ -57,6 +57,16 @@ World myWorld;
 
 GLuint programObject; // GLSL object
 
+// Array to hold the ducks
+Duck duckArray[10];
+// Array to hold times for launching ducks
+GLfloat launchTimes[10];
+// Counters for the timer function
+//// Time that has passed by
+GLfloat timePassed;
+//// Number of ducks to draw from the array.
+GLfloat numDucksDrawn;
+
 GLuint texture[3];
 vector<unsigned char> texture2[2];
 
@@ -87,41 +97,41 @@ void display(void) {
 	// Background of the sky
 	glColor3f(0.68, 0.85, 0.9);
     glBegin(GL_POLYGON);
-    glVertex3f(winWidth / 2, 0.0, 0.0);
-    glVertex3f(winWidth / 2, 3 * winHeight / 4, 0.0);
-    glVertex3f(-winWidth / 2, 3 * winHeight / 4, 0.0);
-    glVertex3f(-winWidth / 2, 0.0, 0.0);
+    glVertex2f(winWidth / 2, 0.0);
+    glVertex2f(winWidth / 2, 3 * winHeight / 4);
+    glVertex2f(-winWidth / 2, 3 * winHeight / 4);
+    glVertex2f(-winWidth / 2, 0.0);
     glEnd();
 
     // TODO: Fix the tree
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, 1.71 * winWidth / 4, 0.2);
-	glTexCoord2f(1.0, 1.0); glVertex3f(-winWidth / 4, 1.71 * winWidth / 4, 0.2);
-	glTexCoord2f(1.0, 0.0); glVertex3f(-winWidth / 4, 0.0, 0.2);
-	glTexCoord2f(0.0, 0.0); glVertex3f(-winWidth / 2, 0.0, 0.2);
-	glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
+//	glPushMatrix();
+//	glEnable(GL_TEXTURE_2D);
+//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
+//	glBegin(GL_QUADS);
+//	glTexCoord2f(0.0, 1.0); glVertex2f(-winWidth / 2, 1.71 * winWidth / 4);
+//	glTexCoord2f(1.0, 1.0); glVertex2f(-winWidth / 4, 1.71 * winWidth / 4);
+//	glTexCoord2f(1.0, 0.0); glVertex2f(-winWidth / 4, 0.0);
+//	glTexCoord2f(0.0, 0.0); glVertex2f(-winWidth / 2, 0.0);
+//	glEnd();
+//	glPopMatrix();
+//	glDisable(GL_TEXTURE_2D);
 
     // TODO: Fix the bush
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex3f((winWidth / 2) - 112, 136, 0.2);
-	glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, 136, 0.2);
-	glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 0.0, 0.2);
-	glTexCoord2f(0.0, 0.0); glVertex3f((winWidth / 2) - 112, 0.0, 0.2);
-	glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
+//	glPushMatrix();
+//	glEnable(GL_TEXTURE_2D);
+//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
+//	glBegin(GL_QUADS);
+//	glTexCoord2f(0.0, 1.0); glVertex2f((winWidth / 2) - 112, 136);
+//	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, 136);
+//	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 0.0);
+//	glTexCoord2f(0.0, 0.0); glVertex2f((winWidth / 2) - 112, 0.0);
+//	glEnd();
+//	glPopMatrix();
+//	glDisable(GL_TEXTURE_2D);
 
 	// Texture of the grass
 	glPushMatrix();
@@ -149,11 +159,14 @@ void display(void) {
 	// The ground colour of original duck hunt
 	glColor3f(0.55, 0.54, 0.0);
 	glBegin(GL_POLYGON);
-	glVertex3f(winWidth / 2, 0.0, 1.0);
-	glVertex3f(winWidth / 2, -winHeight / 2, 1.0);
-	glVertex3f(-winWidth / 2, -winHeight / 2, 1.0);
-	glVertex3f(-winWidth / 2, 0.0, 1.0);
+	glVertex2f(winWidth / 2, 0.0);
+	glVertex2f(winWidth / 2, -winHeight / 2);
+	glVertex2f(-winWidth / 2, -winHeight / 2);
+	glVertex2f(-winWidth / 2, 0.0);
 	glEnd();
+
+	// Draw ducks from Duck array, if they are in the range
+
 
 	glFlush();
 	glutSwapBuffers();
@@ -189,6 +202,12 @@ void reset() {
 	glutPostRedisplay();
 }
 
+// Increment positions of the ducks in the array
+void incrementDucks(int keepGoing) {
+
+	glutTimerFunc(40, incrementDucks, 1);
+}
+
 void init(void) {
 
 	myWorld.myLight->SetLight(1.8, 1.8, 1.5, 1.0);
@@ -213,10 +232,13 @@ void init(void) {
 //	loadbmp(texture, "textures/tree.bmp", 1);
 //	loadbmp(texture, "textures/bush.bmp", 2);
 
-	// Load file and decode image.
-	unsigned width, height;
-	lodepng::decode(texture2[0], width, height, "textures/pngs/tree.png");
-	//texture[2] = image;
+
+	// This function runs through duck array and increments x value of duck
+	incrementDucks(1);
+
+	// Create 10 random times for ducks to be launched.
+
+	// Create 10 ducks
 
 }
 
