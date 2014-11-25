@@ -67,6 +67,9 @@ GLfloat timePassed;
 //// Number of ducks to draw from the array.
 GLfloat numDucksDrawn;
 
+// Location of the mouse
+GLint mouseXCurr, mouseYCurr;
+
 GLuint texture[3];
 vector<unsigned char> texture2[2];
 
@@ -168,6 +171,17 @@ void display(void) {
 	// Draw ducks from Duck array, if they are in the range
 
 
+	// Draw crosshair
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex2f(mouseXCurr+5, mouseYCurr);
+	glVertex2f(mouseXCurr-5, mouseYCurr);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex2f(mouseXCurr, mouseYCurr+5);
+	glVertex2f(mouseXCurr, mouseYCurr-5);
+	glEnd();
+
 	glFlush();
 	glutSwapBuffers();
 }
@@ -194,6 +208,15 @@ void mouseAction(int button, int action, int x, int y) {
 void mouseMotion(GLint x, GLint y) {
 	GLfloat rx, ry, rz, theta;
 
+
+
+}
+
+void passiveMotion(GLint x, GLint y){
+	mouseXCurr = x - 400;
+	mouseYCurr = 600 - y;
+
+	glutPostRedisplay();
 }
 
 void reset() {
@@ -279,6 +302,7 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(display);
 	glutMotionFunc(mouseMotion);
 	glutMouseFunc(mouseAction);
+	glutPassiveMotionFunc(passiveMotion);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 	glutMainLoop();
 
