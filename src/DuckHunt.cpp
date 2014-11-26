@@ -174,7 +174,6 @@ void display(void) {
 
 	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
 	{
-
 		if (!duckArray[i].shot==1){
 			// Texture of the duck.
 				glEnable(GL_TEXTURE_2D);
@@ -223,6 +222,17 @@ void mouseAction(int button, int action, int x, int y) {
 			// Calculate direction
 			// Animate
 			// Check for hit
+
+		for(int i = 0; i < numDucksDrawn; i++) //for loop needed for 6 different random heights
+		{
+			            double radius = sqrt(50*50+50*50); //Calculate Radius.
+						double dx = (duckArray[i].distance+50 - x+400), dy = (duckArray[i].height+50-600+y);
+						double distance = sqrt((dx * dx + dy * dy));
+						if (distance <= radius) {
+							duckArray[i].shot=1;
+						}
+
+		}
 	}
 
 	glutPostRedisplay();
