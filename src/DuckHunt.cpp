@@ -60,7 +60,7 @@ GLuint programObject; // GLSL object
 Duck duckArray[10];
 // Array to hold times for launching ducks
 GLfloat launchTimes[10];
-// Counters for the timer function
+// Counters for the timer functionk
 //// Time that has passed by
 GLfloat timePassed;
 //// Number of ducks to draw from the array.
@@ -208,9 +208,8 @@ void winReshapeFcn(GLint newWidth, GLint newHeight) {
 void mouseAction(int button, int action, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && action == GLUT_DOWN) {
 		// Shoot gun
-			// Calculate direction
-			// Animate
-			// Check for hit
+
+
 
 		for(int i = 0; i < numDucksDrawn; i++) //for loop needed for 6 different random heights
 		{
@@ -219,6 +218,7 @@ void mouseAction(int button, int action, int x, int y) {
 						double distance = sqrt((dx * dx + dy * dy));
 						if (distance <= radius) {
 							duckArray[i].shot=1;
+							// Animate dead duck
 						}
 
 		}
@@ -266,6 +266,20 @@ void generateDucks(int keepGoing) {
 	}
 }
 
+// Increment positions of the ducks in the array
+void flyDucks(int wingsUp) {
+	if(wingsUp){
+		loadbmp(texture, "textures/red.bmp", 1);
+		glutTimerFunc(300, flyDucks, 0);
+	}
+	else{
+		loadbmp(texture, "textures/purple.bmp", 1);
+		glutTimerFunc(300, flyDucks, 1);
+	}
+
+
+}
+
 void init(void) {
 
 	myWorld.myLight->SetLight(1.8, 1.8, 1.5, 1.0);
@@ -307,7 +321,7 @@ void init(void) {
 			duckArray[i].height=(rand() % 280) + 120;
 		}
 	generateDucks(1);
-
+	flyDucks(1);
 }
 
 
