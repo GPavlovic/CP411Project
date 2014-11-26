@@ -169,23 +169,30 @@ void display(void) {
 	glVertex2f(-winWidth / 2, 0.0);
 	glEnd();
 
-	// Texture of the grass
-	glEnable(GL_TEXTURE_2D);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, texture[1]);
 
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex2f(100, winHeight / 8 + 100);
-	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, winHeight / 8 + 100);
-	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 100);
-	glTexCoord2f(0.0, 0.0); glVertex2f(100, 100);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
 	// Draw ducks from Duck array, if they are in the range
-	for (int i = 0; i<numDucksDrawn; i++) {
-		// Draw ducks in the duck array
+
+	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+	{
+
+		if (!duckArray[i].shot==1){
+			// Texture of the duck.
+				glEnable(GL_TEXTURE_2D);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glBindTexture(GL_TEXTURE_2D, texture[1]);
+
+				glBegin(GL_QUADS);
+				glTexCoord2f(0.0, 1.0); glVertex2f(duckArray[i].distance, winHeight / 8 + 100+duckArray[i].height);
+				glTexCoord2f(1.0, 1.0); glVertex2f(duckArray[i].distance+100, winHeight / 8 + 100+duckArray[i].height);
+				glTexCoord2f(1.0, 0.0); glVertex2f(duckArray[i].distance+100, 100+duckArray[i].height);
+				glTexCoord2f(0.0, 0.0); glVertex2f(duckArray[i].distance, 100+duckArray[i].height);
+				glEnd();
+				glDisable(GL_TEXTURE_2D);
+		}
 	}
+
+
 
 	// Draw crosshair
 	glColor3f(1.0, 0.0, 0.0);
@@ -241,13 +248,14 @@ void reset() {
 
 // Increment positions of the ducks in the array
 void incrementDucks(int keepGoing) {
-	int i;
-
-	for (i = 0; i<numDucksDrawn; i++) {
-		// Increment the ducks position for ducks in the duckArray
+	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+	{
+		duckArray[i].distance+=10;
 	}
-
-	glutTimerFunc(40, incrementDucks, 1);
+	glutPostRedisplay();
+	if (keepGoing) {
+		glutTimerFunc(40, incrementDucks, 1);
+	}
 }
 
 void init(void) {
@@ -287,7 +295,7 @@ void init(void) {
 	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
 	{
 
-		duckArray[i].height=(rand() % 300) + 80;
+		duckArray[i].height=(rand() % 300) + 10;
 	}
 
 }
