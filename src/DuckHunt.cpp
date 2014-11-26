@@ -65,7 +65,7 @@ GLfloat launchTimes[10];
 //// Time that has passed by
 GLfloat timePassed;
 //// Number of ducks to draw from the array.
-GLfloat numDucksDrawn;
+GLint numDucksDrawn=0;
 
 // Location of the mouse
 GLint mouseXCurr, mouseYCurr;
@@ -172,7 +172,7 @@ void display(void) {
 
 	// Draw ducks from Duck array, if they are in the range
 
-	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
 	{
 
 		if (!duckArray[i].shot==1){
@@ -183,10 +183,10 @@ void display(void) {
 				glBindTexture(GL_TEXTURE_2D, texture[1]);
 
 				glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 1.0); glVertex2f(duckArray[i].distance, winHeight / 8 + 100+duckArray[i].height);
-				glTexCoord2f(1.0, 1.0); glVertex2f(duckArray[i].distance+100, winHeight / 8 + 100+duckArray[i].height);
-				glTexCoord2f(1.0, 0.0); glVertex2f(duckArray[i].distance+100, 100+duckArray[i].height);
-				glTexCoord2f(0.0, 0.0); glVertex2f(duckArray[i].distance, 100+duckArray[i].height);
+				glTexCoord2f(0.0, 1.0); glVertex2f(duckArray[i].distance, 100+duckArray[i].height);
+				glTexCoord2f(1.0, 1.0); glVertex2f(duckArray[i].distance+100, 100+duckArray[i].height);
+				glTexCoord2f(1.0, 0.0); glVertex2f(duckArray[i].distance+100, duckArray[i].height);
+				glTexCoord2f(0.0, 0.0); glVertex2f(duckArray[i].distance, duckArray[i].height);
 				glEnd();
 				glDisable(GL_TEXTURE_2D);
 		}
@@ -248,13 +248,22 @@ void reset() {
 
 // Increment positions of the ducks in the array
 void incrementDucks(int keepGoing) {
-	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
 	{
 		duckArray[i].distance+=10;
 	}
 	glutPostRedisplay();
 	if (keepGoing) {
 		glutTimerFunc(40, incrementDucks, 1);
+	}
+}
+
+// Increment positions of the ducks in the array
+void generateDucks(int keepGoing) {
+	GLfloat time=launchTimes[numDucksDrawn];
+	numDucksDrawn+=1;
+	if (keepGoing && numDucksDrawn<=10) {
+		glutTimerFunc(time, generateDucks, 1);
 	}
 }
 
@@ -289,14 +298,15 @@ void init(void) {
 	// Create 10 random times for ducks to be launched.
 	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
 				{
-					launchTimes[i] = (rand() % 3000) + 1;
+					launchTimes[i] = (rand() % 1000) + 1000;
 				}
 	// Create 10 ducks
 	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
 	{
 
-		duckArray[i].height=(rand() % 300) + 10;
+		duckArray[i].height=(rand() % 280) + 120;
 	}
+	generateDucks(1);
 
 }
 
