@@ -7,12 +7,13 @@
 
 class Duck: public Shape{
 protected:
-	GLfloat location;	// Circle for the location of the duck
-	GLint wingsUp, wingsDown, shot; // Current action the duck is performing
+
 
 public:
 	Duck(); // Duck constructor
 	void draw(); // Drawing the duck
+	GLfloat height, distance;	// Circle for the location of the duck
+	GLint shot; // Current action the duck is performing
 };
 
 

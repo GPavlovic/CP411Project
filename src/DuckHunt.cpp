@@ -176,8 +176,8 @@ void display(void) {
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex2f(100, winHeight / 8 + 200);
-	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, winHeight / 8 + 200);
+	glTexCoord2f(0.0, 1.0); glVertex2f(100, winHeight / 8 + 100);
+	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, winHeight / 8 + 100);
 	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 100);
 	glTexCoord2f(0.0, 0.0); glVertex2f(100, 100);
 	glEnd();
@@ -221,8 +221,6 @@ void mouseAction(int button, int action, int x, int y) {
 
 void mouseMotion(GLint x, GLint y) {
 	GLfloat rx, ry, rz, theta;
-
-
 
 }
 
@@ -270,13 +268,20 @@ void init(void) {
 //	loadbmp(texture, "textures/tree.bmp", 1);
 //	loadbmp(texture, "textures/bush.bmp", 2);
 
-
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
 
 	// Create 10 random times for ducks to be launched.
-
+	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+				{
+					launchTimes[i] = (rand() % 3000) + 1;
+				}
 	// Create 10 ducks
+	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+	{
+
+		duckArray[i].height=(rand() % 300) + 80;
+	}
 
 }
 

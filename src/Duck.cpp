@@ -3,7 +3,9 @@
 extern GLint winWidth, winHeight;
 
 Duck::Duck() {
-	GLfloat x = -winWidth/2,launchHeight;
+	this->distance = -winWidth/2;
+	this->height=0;
+	this->shot=0;
 	// Find random point on left side of sky, change lanuchHeight
 
 }
