@@ -91,6 +91,7 @@ bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 }
 
 void display(void) {
+
 	glLoadIdentity();
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(-winWidth / 2, winWidth / 2, -winHeight / 4, 3 * winHeight / 4);
@@ -168,6 +169,18 @@ void display(void) {
 	glVertex2f(-winWidth / 2, 0.0);
 	glEnd();
 
+	// Texture of the grass
+	glEnable(GL_TEXTURE_2D);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glBindTexture(GL_TEXTURE_2D, texture[1]);
+
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0, 1.0); glVertex3f(100, winHeight / 8 + 200, 0.2);
+		glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, winHeight / 8 + 200, 0.2);
+		glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 100, 0.2);
+		glTexCoord2f(0.0, 0.0); glVertex3f(100, 100, 0.2);
+		glEnd();
 	// Draw ducks from Duck array, if they are in the range
 
 
@@ -252,6 +265,7 @@ void init(void) {
 
 	// load texture here for the world, weapons, and ducks
 	loadbmp(texture, "textures/ground.bmp", 0);
+	loadbmp(texture, "textures/red.bmp", 1);
 //	loadbmp(texture, "textures/tree.bmp", 1);
 //	loadbmp(texture, "textures/bush.bmp", 2);
 
