@@ -107,7 +107,7 @@ void display(void) {
     glVertex2f(-winWidth / 2, 0.0);
     glEnd();
 
-    // TODO: Fix the tree
+    // TODO(Goran): Potentially fix the tree
 //	glPushMatrix();
 //	glEnable(GL_TEXTURE_2D);
 //	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -122,7 +122,7 @@ void display(void) {
 //	glPopMatrix();
 //	glDisable(GL_TEXTURE_2D);
 
-    // TODO: Fix the bush
+    // TODO(Goran): Potentially fix the bush
 //	glPushMatrix();
 //	glEnable(GL_TEXTURE_2D);
 //	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -171,26 +171,16 @@ void display(void) {
 
 
 	// Draw ducks from Duck array, if they are in the range
-
 	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
 	{
 		if (!duckArray[i].shot==1){
 			// Texture of the duck.
-				glEnable(GL_TEXTURE_2D);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glBindTexture(GL_TEXTURE_2D, texture[1]);
-
-				glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 1.0); glVertex2f(duckArray[i].distance, 100+duckArray[i].height);
-				glTexCoord2f(1.0, 1.0); glVertex2f(duckArray[i].distance+100, 100+duckArray[i].height);
-				glTexCoord2f(1.0, 0.0); glVertex2f(duckArray[i].distance+100, duckArray[i].height);
-				glTexCoord2f(0.0, 0.0); glVertex2f(duckArray[i].distance, duckArray[i].height);
-				glEnd();
-				glDisable(GL_TEXTURE_2D);
+			duckArray[i].draw();
 		}
 	}
 
+
+	// Draw gun
 
 
 	// Draw crosshair
@@ -299,23 +289,24 @@ void init(void) {
 	// load texture here for the world, weapons, and ducks
 	loadbmp(texture, "textures/ground.bmp", 0);
 	loadbmp(texture, "textures/red.bmp", 1);
-//	loadbmp(texture, "textures/tree.bmp", 1);
-//	loadbmp(texture, "textures/bush.bmp", 2);
+	loadbmp(texture, "textures/zapper.bmp", 2);
+//	loadbmp(texture, "textures/tree.bmp", 3);
+//	loadbmp(texture, "textures/bush.bmp", 4);
 
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
 
 	// Create 10 random times for ducks to be launched.
 	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
-				{
-					launchTimes[i] = (rand() % 1000) + 1000;
-				}
+		{
+			launchTimes[i] = (rand() % 1000) + 1000;
+		}
 	// Create 10 ducks
 	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
-	{
+		{
 
-		duckArray[i].height=(rand() % 280) + 120;
-	}
+			duckArray[i].height=(rand() % 280) + 120;
+		}
 	generateDucks(1);
 
 }
@@ -359,6 +350,7 @@ int main(int argc, char** argv) {
 	glutMouseFunc(mouseAction);
 	glutPassiveMotionFunc(passiveMotion);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
+	glutSetCursor(GLUT_CURSOR_NONE);
 	glutMainLoop();
 
 	return 0;
