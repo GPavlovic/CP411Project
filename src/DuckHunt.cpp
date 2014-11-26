@@ -145,17 +145,17 @@ void display(void) {
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	// Left side of the screen grass
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, winHeight / 8 + 20, 0.2);
-	glTexCoord2f(1.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.2);
-	glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, 0.2);
-	glTexCoord2f(0.0, 0.0); glVertex3f(-winWidth / 2, 0.0, 0.2);
+	glTexCoord2f(0.0, 1.0); glVertex2f(-winWidth / 2, winHeight / 8 + 20);
+	glTexCoord2f(1.0, 1.0); glVertex2f(0.0, winHeight / 8 + 20);
+	glTexCoord2f(1.0, 0.0); glVertex2f(0.0, 0.0);
+	glTexCoord2f(0.0, 0.0); glVertex2f(-winWidth / 2, 0.0);
 	glEnd();
 	// Right side of the screen grass
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.2);
-	glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, winHeight / 8 + 20, 0.2);
-	glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 0.0, 0.2);
-	glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.2);
+	glTexCoord2f(0.0, 1.0); glVertex2f(0.0, winHeight / 8 + 20);
+	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, winHeight / 8 + 20);
+	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 0.0);
+	glTexCoord2f(0.0, 0.0); glVertex2f(0.0, 0.0);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
@@ -171,16 +171,17 @@ void display(void) {
 
 	// Texture of the grass
 	glEnable(GL_TEXTURE_2D);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glBindTexture(GL_TEXTURE_2D, texture[1]);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, texture[1]);
 
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0, 1.0); glVertex3f(100, winHeight / 8 + 200, 0.2);
-		glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, winHeight / 8 + 200, 0.2);
-		glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 100, 0.2);
-		glTexCoord2f(0.0, 0.0); glVertex3f(100, 100, 0.2);
-		glEnd();
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex2f(100, winHeight / 8 + 200);
+	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, winHeight / 8 + 200);
+	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 100);
+	glTexCoord2f(0.0, 0.0); glVertex2f(100, 100);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 	// Draw ducks from Duck array, if they are in the range
 
 
