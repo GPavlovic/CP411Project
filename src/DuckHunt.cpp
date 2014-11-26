@@ -183,7 +183,9 @@ void display(void) {
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	// Draw ducks from Duck array, if they are in the range
-
+	for (int i = 0; i<numDucksDrawn; i++) {
+		// Draw ducks in the duck array
+	}
 
 	// Draw crosshair
 	glColor3f(1.0, 0.0, 0.0);
@@ -239,6 +241,11 @@ void reset() {
 
 // Increment positions of the ducks in the array
 void incrementDucks(int keepGoing) {
+	int i;
+
+	for (i = 0; i<numDucksDrawn; i++) {
+		// Increment the ducks position for ducks in the duckArray
+	}
 
 	glutTimerFunc(40, incrementDucks, 1);
 }
