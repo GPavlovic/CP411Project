@@ -11,6 +11,7 @@ public:
 	Zapper(); // Zapper constructor
 	void draw(); // Drawing the Zapper
 	void calcRot(); // Calculate the rotation of the gun
+	void updateLoc(); // Update the location of the gun based on the rotation
 };
 
 #endif

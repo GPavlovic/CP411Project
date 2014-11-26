@@ -10,6 +10,7 @@
 #include "Camera.hpp"
 #include "World.hpp"
 #include "Duck.hpp"
+#include "Zapper.hpp"
 
 GLint winWidth = 800, winHeight = 800;
 
@@ -68,6 +69,9 @@ GLint numDucksDrawn=0;
 
 // Location of the mouse
 GLint mouseXCurr, mouseYCurr;
+
+// Zapper
+Zapper myZapper;
 
 GLuint texture[3];
 vector<unsigned char> texture2[2];
@@ -180,6 +184,9 @@ void display(void) {
 
 
 	// Draw gun
+	myZapper.calcRot();
+	myZapper.updateLoc();
+	myZapper.draw();
 
 
 	// Draw crosshair
@@ -302,7 +309,7 @@ void init(void) {
 	// load texture here for the world, weapons, and ducks
 	loadbmp(texture, "textures/ground.bmp", 0);
 	loadbmp(texture, "textures/red.bmp", 1);
-	//loadbmp(texture, "textures/zapper.bmp", 2);
+	loadbmp(texture, "textures/red.bmp", 2);
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
