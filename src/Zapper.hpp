@@ -6,7 +6,7 @@
 class Zapper {
 protected:
 	GLfloat location[4][2];	// Original location of the gun
-	GLint rotation; // Current rotation to point at mouse
+	GLfloat rotation; // Current rotation to point at mouse
 public:
 	Zapper(); // Zapper constructor
 	void draw(); // Drawing the Zapper

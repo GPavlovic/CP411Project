@@ -1,5 +1,9 @@
 #include "Zapper.hpp"
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#define PI 3.14159265
 
 extern GLint winWidth, winHeight;
 extern GLuint texture[3];
@@ -24,8 +28,6 @@ Zapper::Zapper() {
 }
 
 void Zapper::draw() {
-
-
 	// Texture of the Zapper.
 	glEnable(GL_TEXTURE_2D);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -46,6 +48,8 @@ void Zapper::calcRot() {
 	GLint mouseVector[2][2];
 	GLint gunVector[2][2];
 	GLint resultVector[2][2];
+	GLint dist1, dist2, dist3;
+	GLfloat temp;
 
 	// Set current mouse vector, moved 150 pixels up in order to add to the gun vector properly
 	mouseVector[0][0] = 0; // Tail X
@@ -62,17 +66,28 @@ void Zapper::calcRot() {
 	// Calculate the result vector (adding mouse and gun vectors)
 	resultVector[0][0] = 0; // Tail X
 	resultVector[0][1] = 0; // Tail Y
-	resultVector[1][0] = mouseVector[1][0] + gunVector[1][0]; // Head X
-	resultVector[1][1] = mouseVector[1][1] + gunVector[1][1]; // Head Y
+	resultVector[1][0] = mouseVector[1][0]; // Head X
+	resultVector[1][1] = mouseVector[1][1] + gunVector[1][1] - 150; // Head Y
 
-	// Find the length of the result vector (hypotenuse)
-	int dist = sqrt(pow(resultVector[1][0], 2) + pow(resultVector[1][1], 2));
+	// Find the length of the result vector
+	dist1 = sqrt(pow(resultVector[1][0], 2) + pow(resultVector[1][1], 2));
+	// Find the length of the gun vector
+	dist2 = 150;
+	// Find the length of the mouse vector
+	dist3 = sqrt(mouseXCurr * mouseXCurr + mouseYCurr * mouseYCurr);
+
+	printf("dist1: %d, dist2: %d, dist3: %d\n", dist1, dist2, dist3);
 	// Calculate the angle
-	rotation = cos(150/dist);
-	// If the mouse is in positive X then the angle of rotation should be negative
+	//rotation = acos((pow(dist1,2)+pow(dist2,2)-pow(dist3,2))/(2 * dist1 * dist2));
+	rotation = acos(0.2);
+	printf("Rotation 0: %d\n", rotation);
+	rotation = (rotation * 180.0) / PI; // Convert from radians to degrees
+	printf("Rotation 1: %d\n", rotation);
+	// If the mouse is in positive X then the angle of rotation should be negative to rotate clockwise
 	if (location[1][0] > 0) {
 		rotation = -rotation;
 	}
+	printf("rotation 2: %d\n", rotation);
 }
 
 void Zapper::updateLoc() {
