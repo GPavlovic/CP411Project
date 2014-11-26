@@ -1,7 +1,7 @@
 #include "Zapper.hpp"
 
 extern GLint winWidth, winHeight;
-extern Duck duckArray[10];
+extern GLuint texture[3];
 extern GLint mouseXCurr, mouseYCurr;
 
 Zapper::Zapper() {

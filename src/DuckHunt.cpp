@@ -9,7 +9,6 @@
 #include "Shape.hpp"
 #include "Camera.hpp"
 #include "World.hpp"
-#include "lodepng.h"
 #include "Duck.hpp"
 
 GLint winWidth = 800, winHeight = 800;
@@ -289,7 +288,7 @@ void init(void) {
 	// load texture here for the world, weapons, and ducks
 	loadbmp(texture, "textures/ground.bmp", 0);
 	loadbmp(texture, "textures/red.bmp", 1);
-	loadbmp(texture, "textures/zapper.bmp", 2);
+	//loadbmp(texture, "textures/zapper.bmp", 2);
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
