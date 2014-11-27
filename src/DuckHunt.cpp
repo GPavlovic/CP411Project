@@ -175,7 +175,6 @@ void display(void) {
 	glVertex2f(-winWidth / 2, -winHeight / 2);
 	glVertex2f(-winWidth / 2, 0.0);
 	glEnd();
-	glColor3f(255, 255, 255);
 	glColor3f(0.68, 0.85, 0.9);
 
 	// Draw ducks from Duck array, if they are in the range
@@ -191,9 +190,9 @@ void display(void) {
 
 
 	// Draw gun
-	myZapper.calcRot();
-	myZapper.updateLoc();
-	myZapper.draw();
+//	myZapper.calcRot();
+//	myZapper.updateLoc();
+//	myZapper.draw();
 
 
 	// Draw crosshair
@@ -364,6 +363,7 @@ void init(void) {
 	loadbmp(texture, "textures/wingsDown.bmp", 1);
 	loadbmp(texture, "textures/red.bmp", 2);
 	loadbmp(texture, "textures/dead.bmp", 3);
+	loadbmp(texture, "textures/zapper.bmp", 4);
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
