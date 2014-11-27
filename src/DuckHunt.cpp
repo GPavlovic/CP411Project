@@ -249,10 +249,10 @@ void mouseAction(int button, int action, int x, int y) {
 							duckArray[i].dying=1;
 							duckIsDying=1;
 							void killDucks(int notDeadYet);
+							PlaySound("sounds/shot.wav", NULL, SND_ASYNC | SND_FILENAME);
 							killDucks(1);
-							//TODO: Braden - Animate falling duck
+							//TODO: Potentially add falling duck animation.
 						}
-
 		}
 	}
 
@@ -303,7 +303,8 @@ void generateDucks(int keepGoing) {
 
 // Alternate between wing up/down
 void flyDucks(int wingsUp) {
-
+	//Check if there are any ducks on the screen that have not been shot.
+	//If so, we will play a quacking noise.
 	int notShot = 0;
 	for (int i = 0; i < numDucksDrawn; i++) {
 
@@ -311,6 +312,8 @@ void flyDucks(int wingsUp) {
 			notShot = 1;
 		}
 	}
+	//Check that the last duck is still on the screen.
+	//If so, draw animation.
 	if (duckArray[numDucksInLevel1 - 1].distance + 550 <= winWidth) {
 		if (wingsUp == 3) {
 			loadbmp(texture, "textures/wingsDown.bmp", 1);
