@@ -302,13 +302,17 @@ void generateDucks(int keepGoing) {
 // Alternate between wing up/down
 //TODO: add quacking.
 void flyDucks(int wingsUp) {
-	if(wingsUp){
+	if(wingsUp==3){
 		loadbmp(texture, "textures/wingsDown.bmp", 1);
-		glutTimerFunc(300, flyDucks, 0);
+		glutTimerFunc(200, flyDucks, 1);
+	}
+	else if(wingsUp==1){
+		loadbmp(texture, "textures/quack.bmp", 1);
+				glutTimerFunc(200, flyDucks, 2);
 	}
 	else{
 		loadbmp(texture, "textures/wingsUp.bmp", 1);
-		glutTimerFunc(300, flyDucks, 1);
+		glutTimerFunc(200, flyDucks, 3);
 	}
 }
 
