@@ -12,6 +12,8 @@
 #include "Duck.hpp"
 #include "Zapper.hpp"
 
+#define numDucksInLevel1 10
+
 GLint winWidth = 800, winHeight = 800;
 
 // move the view setting to camera
@@ -29,7 +31,7 @@ GLint moving = 0, xBegin = 0, yBegin = 0, coordinate = 1, type = 1,
 		selected = 0;
 
 GLfloat P = 1.0;
-
+GLint duckSize = 50;
 GLint style = 1, lightOn = 0, showLight = 1, lightAdjust = 1;
 
 //Lighting substitute lx, ly, lz
@@ -58,15 +60,14 @@ World myWorld;
 GLuint programObject; // GLSL object
 
 // Array to hold the ducks
-Duck duckArray[10];
+Duck duckArray[numDucksInLevel1];
 // Array to hold times for launching ducks
-GLfloat launchTimes[10];
+GLfloat launchTimes[numDucksInLevel1];
 // Counters for the timer functionk
 //// Time that has passed by
 GLfloat timePassed;
 //// Number of ducks to draw from the array.
 GLint numDucksDrawn=0;
-
 // Location of the mouse
 GLint mouseXCurr, mouseYCurr;
 
@@ -175,7 +176,7 @@ void display(void) {
 	glColor3f(0.68, 0.85, 0.9);
 
 	// Draw ducks from Duck array, if they are in the range
-	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
+	for(int i = 0; i < numDucksDrawn; i ++)
 	{
 		if (!duckArray[i].shot==1){
 			// Texture of the duck.
@@ -215,18 +216,17 @@ void winReshapeFcn(GLint newWidth, GLint newHeight) {
 
 void mouseAction(int button, int action, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && action == GLUT_DOWN) {
-		// Shoot gun
 
-
-
-		for(int i = 0; i < numDucksDrawn; i++) //for loop needed for 6 different random heights
+		//TODO: Goran - Shoot gun
+		//TODO: Add gun audio.
+		for(int i = 0; i < numDucksDrawn; i++) //Find the duck that was shot.
 		{
-			            double radius = sqrt(50*50+50*50); //Calculate Radius.
-						double dx = (duckArray[i].distance+50 - x+400), dy = (duckArray[i].height+50-600+y);
+			            double radius = sqrt(duckSize*duckSize+duckSize*duckSize); //Calculate Radius.
+						double dx = (duckArray[i].distance+duckSize - x+winWidth/2), dy = (duckArray[i].height+duckSize-(winHeight/2+winHeight/4)+y);
 						double distance = sqrt((dx * dx + dy * dy));
 						if (distance <= radius) {
 							duckArray[i].shot=1;
-							// Animate dead duck
+							//TODO: Braden - Animate dead duck
 						}
 
 		}
@@ -240,9 +240,10 @@ void mouseMotion(GLint x, GLint y) {
 
 }
 
+//Move the cross-hair according to the mouse position.
 void passiveMotion(GLint x, GLint y){
-	mouseXCurr = x - 400;
-	mouseYCurr = 600 - y;
+	mouseXCurr = x - winWidth/2;
+	mouseYCurr = winHeight/2+winHeight/4 - y;
 
 	glutPostRedisplay();
 }
@@ -265,16 +266,17 @@ void incrementDucks(int keepGoing) {
 	}
 }
 
-// Increment positions of the ducks in the array
+// Put the ducks into the game
 void generateDucks(int keepGoing) {
 	GLfloat time=launchTimes[numDucksDrawn];
 	numDucksDrawn+=1;
-	if (keepGoing && numDucksDrawn<=10) {
+	if (keepGoing && numDucksDrawn<=numDucksInLevel1) {
 		glutTimerFunc(time, generateDucks, 1);
 	}
 }
 
-// Increment positions of the ducks in the array
+// Alternate between wing up/down
+//TODO: add quacking.
 void flyDucks(int wingsUp) {
 	if(wingsUp){
 		loadbmp(texture, "textures/wingsDown.bmp", 1);
@@ -284,8 +286,6 @@ void flyDucks(int wingsUp) {
 		loadbmp(texture, "textures/wingsUp.bmp", 1);
 		glutTimerFunc(300, flyDucks, 1);
 	}
-
-
 }
 
 void init(void) {
@@ -314,18 +314,20 @@ void init(void) {
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
+	//TODO: Implement levels and score.
+	//TODO: Fullscreen? Tree? Music? Dog? multi-directional flying? 3D? Ideas?
+
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
 
-	// Create 10 random times for ducks to be launched.
-	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+	// Create random times for ducks to be launched.
+	for(int i = 0; i < numDucksInLevel1; i ++)
 		{
 			launchTimes[i] = (rand() % 1000) + 1000;
 		}
-	// Create 10 ducks
-	for(int i = 0; i < 10; i ++) //for loop needed for 6 different random heights
+	// Create ducks.
+	for(int i = 0; i < numDucksInLevel1; i ++)
 		{
-
 			duckArray[i].height=(rand() % 280) + 120;
 		}
 	generateDucks(1);
@@ -347,8 +349,6 @@ void mainMenu(GLint option) {
 }
 
 void menu() {
-
-
 	glutCreateMenu(mainMenu);      // Create main pop-up menu.
 	// Possible game options, like timing of duck launches or something
 	glutAddMenuEntry(" Reset ", 1);
