@@ -171,7 +171,8 @@ void display(void) {
 	glVertex2f(-winWidth / 2, -winHeight / 2);
 	glVertex2f(-winWidth / 2, 0.0);
 	glEnd();
-
+	glColor3f(255, 255, 255);
+	glColor3f(0.68, 0.85, 0.9);
 
 	// Draw ducks from Duck array, if they are in the range
 	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
@@ -276,11 +277,11 @@ void generateDucks(int keepGoing) {
 // Increment positions of the ducks in the array
 void flyDucks(int wingsUp) {
 	if(wingsUp){
-		loadbmp(texture, "textures/red.bmp", 1);
+		loadbmp(texture, "textures/wingsDown.bmp", 1);
 		glutTimerFunc(300, flyDucks, 0);
 	}
 	else{
-		loadbmp(texture, "textures/purple.bmp", 1);
+		loadbmp(texture, "textures/wingsUp.bmp", 1);
 		glutTimerFunc(300, flyDucks, 1);
 	}
 
@@ -308,7 +309,7 @@ void init(void) {
 
 	// load texture here for the world, weapons, and ducks
 	loadbmp(texture, "textures/ground.bmp", 0);
-	loadbmp(texture, "textures/red.bmp", 1);
+	loadbmp(texture, "textures/wingsDown.bmp", 1);
 	loadbmp(texture, "textures/red.bmp", 2);
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
