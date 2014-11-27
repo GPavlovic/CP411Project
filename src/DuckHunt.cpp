@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <iostream>
+#include <Windows.h>
+#include <MMSystem.h>
 #include "Shape.hpp"
 #include "Camera.hpp"
 #include "World.hpp"
@@ -248,7 +250,7 @@ void mouseAction(int button, int action, int x, int y) {
 							duckIsDying=1;
 							void killDucks(int notDeadYet);
 							killDucks(1);
-							//TODO: Braden - Animate dead duck
+							//TODO: Braden - Animate falling duck
 						}
 
 		}
@@ -294,25 +296,35 @@ void incrementDucks(int keepGoing) {
 void generateDucks(int keepGoing) {
 	GLfloat time=launchTimes[numDucksDrawn];
 	numDucksDrawn+=1;
-	if (keepGoing && numDucksDrawn<=numDucksInLevel1) {
+	if (keepGoing && numDucksDrawn<numDucksInLevel1) {
 		glutTimerFunc(time, generateDucks, 1);
 	}
 }
 
 // Alternate between wing up/down
-//TODO: add quacking.
 void flyDucks(int wingsUp) {
-	if(wingsUp==3){
-		loadbmp(texture, "textures/wingsDown.bmp", 1);
-		glutTimerFunc(200, flyDucks, 1);
+
+	int notShot = 0;
+	for (int i = 0; i < numDucksDrawn; i++) {
+
+		if (!duckArray[i].shot == 1) {
+			notShot = 1;
+		}
 	}
-	else if(wingsUp==1){
-		loadbmp(texture, "textures/quack.bmp", 1);
-				glutTimerFunc(200, flyDucks, 2);
-	}
-	else{
-		loadbmp(texture, "textures/wingsUp.bmp", 1);
-		glutTimerFunc(200, flyDucks, 3);
+	if (duckArray[numDucksInLevel1 - 1].distance + 550 <= winWidth) {
+		if (wingsUp == 3) {
+			loadbmp(texture, "textures/wingsDown.bmp", 1);
+			glutTimerFunc(200, flyDucks, 1);
+		} else if (wingsUp == 1) {
+			loadbmp(texture, "textures/quack.bmp", 1);
+			if (notShot) {
+				PlaySound("sounds/quack.wav", NULL, SND_ASYNC | SND_FILENAME);
+			}
+			glutTimerFunc(200, flyDucks, 2);
+		} else {
+			loadbmp(texture, "textures/wingsUp.bmp", 1);
+			glutTimerFunc(200, flyDucks, 3);
+		}
 	}
 }
 
@@ -353,7 +365,7 @@ void init(void) {
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
 	//TODO: Implement levels and score.
-	//TODO: Fullscreen? Tree? Music? Dog? multi-directional flying? 3D? Ideas?
+	//TODO: Tree? Music? Dog? multi-directional flying? 3D? Ideas?
 
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
@@ -368,6 +380,9 @@ void init(void) {
 		{
 			duckArray[i].height=(rand() % 280) + 120;
 		}
+	//Implement delay before game start and in between levels.
+	//Play music.
+	//PlaySound("sounds/start.wav", NULL, SND_ASYNC|SND_FILENAME);
 	generateDucks(1);
 	flyDucks(1);
 }
