@@ -6,7 +6,7 @@
 #define PI 3.14159265
 
 extern GLint winWidth, winHeight;
-extern GLuint texture[3];
+extern GLuint texture[5];
 extern GLint mouseXCurr, mouseYCurr;
 
 Zapper::Zapper() {

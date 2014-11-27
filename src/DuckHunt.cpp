@@ -73,7 +73,7 @@ GLint mouseXCurr, mouseYCurr;
 // Zapper
 Zapper myZapper;
 
-GLuint texture[3];
+GLuint texture[5];
 vector<unsigned char> texture2[2];
 
 
@@ -115,7 +115,7 @@ void display(void) {
 //	glEnable(GL_TEXTURE_2D);
 //	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 //	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
+//	glBindTexture(GL_TEXTURE_2D, texture[3]);
 //	glBegin(GL_QUADS);
 //	glTexCoord2f(0.0, 1.0); glVertex2f(-winWidth / 2, 1.71 * winWidth / 4);
 //	glTexCoord2f(1.0, 1.0); glVertex2f(-winWidth / 4, 1.71 * winWidth / 4);
