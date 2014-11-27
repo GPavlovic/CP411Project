@@ -187,7 +187,24 @@ void display(void) {
 	}
 	void drawOneDeadDuck();
 	drawOneDeadDuck();
+	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
+	    glRasterPos2i(winWidth/2-100,40-winHeight/2+winHeight/4);
+	    string hey="YOO GUY!!";
+	    std::string s = hey;
+	    void * font = GLUT_BITMAP_9_BY_15;
 
+	    for (std::string::iterator i = s.begin(); i != s.end(); ++i)
+	    {
+	        char c = *i;
+	        //this does nothing, color is fixed for Bitmaps when calling glRasterPos
+	        //glColor3f(1.0, 0.0, 1.0);
+	        glutBitmapCharacter(font, c);
+	    }
+	    glMatrixMode(GL_MODELVIEW);
+	    glPopMatrix();
+	    glMatrixMode(GL_PROJECTION);
+	    glPopMatrix();
+	    glEnable(GL_TEXTURE_2D);
 
 	// Draw gun
 //	myZapper.calcRot();
