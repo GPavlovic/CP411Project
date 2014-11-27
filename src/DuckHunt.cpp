@@ -218,7 +218,6 @@ void drawOneDeadDuck() {
 					return;
 				}
 				else{
-					duckIsDying=0;
 					duckArray[i].dying=0;
 				}
 			}
@@ -243,7 +242,7 @@ void mouseAction(int button, int action, int x, int y) {
 			            double radius = sqrt(duckSize*duckSize+duckSize*duckSize); //Calculate Radius.
 						double dx = (duckArray[i].distance+duckSize - x+winWidth/2), dy = (duckArray[i].height+duckSize-(winHeight/2+winHeight/4)+y);
 						double distance = sqrt((dx * dx + dy * dy));
-						if (distance <= radius) {
+						if (distance <= radius && !duckArray[i].shot) {
 							duckArray[i].shot=1;
 							duckArray[i].dying=1;
 							duckIsDying=1;
