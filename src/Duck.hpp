@@ -10,8 +10,9 @@ protected:
 public:
 	Duck(); // Duck constructor
 	void draw(); // Drawing the duck
+	void drawDead(); // Drawing the duck
 	GLfloat height, distance;	// Circle for the location of the duck
-	GLint shot; // Current action the duck is performing
+	GLint shot, dying; // Current action the duck is performing
 };
 
 

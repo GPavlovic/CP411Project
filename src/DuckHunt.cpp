@@ -77,6 +77,7 @@ Zapper myZapper;
 GLuint texture[5];
 vector<unsigned char> texture2[2];
 
+GLint duckIsDying=0;
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	if (!strFileName)
@@ -183,6 +184,8 @@ void display(void) {
 			duckArray[i].draw();
 		}
 	}
+	void drawOneDeadDuck();
+	drawOneDeadDuck();
 
 
 	// Draw gun
@@ -205,6 +208,22 @@ void display(void) {
 	glFlush();
 	glutSwapBuffers();
 }
+void drawOneDeadDuck() {
+	// Draw ducks from Duck array, if they are in the range
+		for(int i = 0; i < numDucksDrawn; i ++)
+		{
+			if(duckArray[i].dying==1&&duckArray[i].shot==1){
+				if(duckIsDying==1){
+					duckArray[i].drawDead();
+					return;
+				}
+				else{
+					duckIsDying=0;
+					duckArray[i].dying=0;
+				}
+			}
+		}
+}
 
 void winReshapeFcn(GLint newWidth, GLint newHeight) {
 	glViewport(0, 0, newWidth, newHeight);
@@ -226,6 +245,10 @@ void mouseAction(int button, int action, int x, int y) {
 						double distance = sqrt((dx * dx + dy * dy));
 						if (distance <= radius) {
 							duckArray[i].shot=1;
+							duckArray[i].dying=1;
+							duckIsDying=1;
+							void killDucks(int notDeadYet);
+							killDucks(1);
 							//TODO: Braden - Animate dead duck
 						}
 
@@ -258,7 +281,9 @@ void reset() {
 void incrementDucks(int keepGoing) {
 	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
 	{
+		if (!duckArray[i].shot==1){
 		duckArray[i].distance+=10;
+		}
 	}
 	glutPostRedisplay();
 	if (keepGoing) {
@@ -288,6 +313,15 @@ void flyDucks(int wingsUp) {
 	}
 }
 
+void killDucks(int notDeadYet) {
+	if(notDeadYet){
+		glutTimerFunc(300, killDucks, 0);
+	}
+	else{
+		duckIsDying=0;
+	}
+}
+
 void init(void) {
 
 	myWorld.myLight->SetLight(1.8, 1.8, 1.5, 1.0);
@@ -311,6 +345,7 @@ void init(void) {
 	loadbmp(texture, "textures/ground.bmp", 0);
 	loadbmp(texture, "textures/wingsDown.bmp", 1);
 	loadbmp(texture, "textures/red.bmp", 2);
+	loadbmp(texture, "textures/dead.bmp", 3);
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
