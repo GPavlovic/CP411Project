@@ -1,5 +1,5 @@
-//TODO: Features- Tree? 3D cube for levels? Music? Dog? multi-directional flying? Ideas?
-//TODO: Design - Fix shooting sound, Load duck flying images only once
+//TODO: Features- Levels. Tree? 3D cube for levels? Music? Dog? multi-directional flying? Ideas?
+//TODO: Design - Load duck flying images only once
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <sstream>
@@ -93,7 +93,7 @@ GLint duckIsDying=0,gameIsStarting=1;
 //Used to indicate to the display function to display the level number.
 GLint level1IsStarting=1, level2IsStarting=1, level3IsStarting=1, level4IsStarting=1;
 
-void startLevel1(int nothing);
+void startLevel(int level);
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	if (!strFileName)
@@ -196,7 +196,7 @@ void display(void) {
 	{
 		if (!duckArray[i].shot==1){
 			// Texture of the duck.
-			duckArray[i].draw();
+			duckArray[i].draw(0);
 		}
 	}
 	// Draw any dead ducks
@@ -296,7 +296,7 @@ void drawOneDeadDuck() {
 		{
 			if(duckArray[i].dying==1&&duckArray[i].shot==1){
 				if(duckIsDying==1){
-					duckArray[i].drawDead();
+					duckArray[i].draw(1);
 					return;
 				}
 				else{
@@ -412,7 +412,7 @@ void flyDucks(int wingsUp) {
 			loadbmp(texture, "textures/quack.bmp", 1);
 			if (wingsUp != 5 || gameIsStarting) {
 				if (notShot) {
-					if (thisDuckIsntShot.distance + 550 <= winWidth) {
+					if (thisDuckIsntShot.distance <= winWidth/2) {
 						PlaySound("sounds/quack.wav", NULL,
 								SND_ASYNC | SND_FILENAME);
 					}
@@ -467,15 +467,16 @@ void init(void) {
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
 	PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
-	glutTimerFunc(7000, startLevel1, 1);
+
+	numDucksInLevel=numDucksInLevel1;
+	glutTimerFunc(7000, startLevel, 1);
 }
 
-void startLevel1(int nothing){
+void startLevel(int level){
+	//check which level it is.
 	level1IsStarting=0;
-	numDucksInLevel=numDucksInLevel1;
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
-
 	// Create random times for ducks to be launched.
 	for(int i = 0; i < numDucksInLevel; i ++)
 		{
@@ -489,6 +490,9 @@ void startLevel1(int nothing){
 	generateDucks(1);
 	flyDucks(1);
 	//TODO: Implement next level.
+	//Check which level it is.
+	//level2IsStarting=0;
+	//numDucksInLevel=numDucksInLevel2;
 	//glutTimerFunc(7000, startLevel2, 1);
 }
 
