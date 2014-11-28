@@ -84,7 +84,7 @@ vector<unsigned char> texture2[2];
 
 GLint duckIsDying=0,gameIsStarting=1;
 
-void startLevel1();
+void startLevel1(int nothing);
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	if (!strFileName)
@@ -359,7 +359,7 @@ void flyDucks(int wingsUp) {
 		} else if (wingsUp % 2==1 && wingsUp<=10 && wingsUp!=5) {
 			loadbmp(texture, "textures/wingsUp.bmp", 1);
 						glutTimerFunc(200, flyDucks, wingsUp+1);
-		} else {
+		} else if (duckArray[numDucksInLevel1 - 1].distance + 550 <= winWidth) {
 			loadbmp(texture, "textures/quack.bmp", 1);
 			if(wingsUp!=5||gameIsStarting){
 						if (notShot) {
@@ -383,6 +383,8 @@ void killDucks(int notDeadYet) {
 		duckIsDying=0;
 	}
 }
+
+
 
 void init(void) {
 
@@ -415,12 +417,11 @@ void init(void) {
 	//Play music.
 	//PlaySound("sounds/start.wav", NULL, SND_ASYNC|SND_FILENAME);
 
-	//TODO: Implement delay before game start and in between levels.
-
-	startLevel1();
+	PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
+	glutTimerFunc(7000, startLevel1, 1);
 }
 
-void startLevel1(){
+void startLevel1(int nothing){
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
 
@@ -437,6 +438,7 @@ void startLevel1(){
 	generateDucks(1);
 	flyDucks(1);
 	//TODO: Implement next level.
+	//glutTimerFunc(7000, startLevel2, 1);
 }
 
 void mainMenu(GLint option) {
