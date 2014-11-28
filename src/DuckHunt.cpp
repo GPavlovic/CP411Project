@@ -271,9 +271,8 @@ void display(void) {
 
 
 	// Draw gun
-//	myZapper.calcRot();
-//	myZapper.updateLoc();
-//	myZapper.draw();
+	myZapper.updateLoc();
+	myZapper.draw();
 
 
 	// Draw crosshair
