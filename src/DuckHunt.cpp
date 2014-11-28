@@ -1,3 +1,5 @@
+//TODO: Features- Tree? 3D cube for levels? Music? Dog? multi-directional flying? Ideas?
+//TODO: Design - Fix shooting sound, Load duck flying images only once
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <sstream>
@@ -80,7 +82,8 @@ Zapper myZapper;
 GLuint texture[5];
 vector<unsigned char> texture2[2];
 
-GLint duckIsDying=0;
+GLint duckIsDying=0,gameIsStarting=1;
+
 void startLevel1();
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
@@ -349,18 +352,25 @@ void flyDucks(int wingsUp) {
 	//Check that the last duck is still on the screen.
 	//If so, draw animation.
 	if (duckArray[numDucksInLevel1 - 1].distance + 550 <= winWidth) {
-		if (wingsUp == 3) {
+		if (wingsUp % 2==0 && wingsUp<=10) {
 			loadbmp(texture, "textures/wingsDown.bmp", 1);
-			glutTimerFunc(200, flyDucks, 1);
-		} else if (wingsUp == 1) {
-			loadbmp(texture, "textures/quack.bmp", 1);
-			if (notShot) {
-				PlaySound("sounds/quack.wav", NULL, SND_ASYNC | SND_FILENAME);
-			}
-			glutTimerFunc(200, flyDucks, 2);
-		} else {
+			glutTimerFunc(200, flyDucks, wingsUp+1);
+
+		} else if (wingsUp % 2==1 && wingsUp<=10 && wingsUp!=5) {
 			loadbmp(texture, "textures/wingsUp.bmp", 1);
-			glutTimerFunc(200, flyDucks, 3);
+						glutTimerFunc(200, flyDucks, wingsUp+1);
+		} else {
+			loadbmp(texture, "textures/quack.bmp", 1);
+			if(wingsUp!=5||gameIsStarting){
+						if (notShot) {
+							PlaySound("sounds/quack.wav", NULL, SND_ASYNC | SND_FILENAME);
+						}
+						gameIsStarting=0;
+						glutTimerFunc(200, flyDucks, 1);
+						}
+						else{
+							glutTimerFunc(200, flyDucks, wingsUp+1);
+						}
 		}
 	}
 }
@@ -402,11 +412,12 @@ void init(void) {
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
+	//Play music.
+	//PlaySound("sounds/start.wav", NULL, SND_ASYNC|SND_FILENAME);
+
+	//TODO: Implement delay before game start and in between levels.
+
 	startLevel1();
-	//TODO: Implement levels and score.
-	//TODO: Tree? Music? Dog? multi-directional flying? 3D? Ideas?
-
-
 }
 
 void startLevel1(){
@@ -423,11 +434,9 @@ void startLevel1(){
 		{
 			duckArray[i].height=(rand() % 280) + 120;
 		}
-	//Implement delay before game start and in between levels.
-	//Play music.
-	//PlaySound("sounds/start.wav", NULL, SND_ASYNC|SND_FILENAME);
 	generateDucks(1);
 	flyDucks(1);
+	//TODO: Implement next level.
 }
 
 void mainMenu(GLint option) {
