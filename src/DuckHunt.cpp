@@ -90,6 +90,9 @@ vector<unsigned char> texture2[2];
 
 GLint duckIsDying=0,gameIsStarting=1;
 
+//Used to indicate to the display function to display the level number.
+GLint level1IsStarting=1, level2IsStarting=1, level3IsStarting=1, level4IsStarting=1;
+
 void startLevel1(int nothing);
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
@@ -217,7 +220,42 @@ void display(void) {
 		glVertex2f(winWidth / 2-120, (-winHeight / 4)+50);
 		glVertex2f(winWidth/2-120, -winHeight / 4+10);
 		glEnd();
+	    if(level1IsStarting){
+		// Displaying the level number.
+				glColor3f(1.0, 1.0, 1.0);
+				glBegin(GL_POLYGON);
+				glVertex2f(205 ,45);
+				glVertex2f(205,255);
+				glVertex2f(-205, 255);
+				glVertex2f(-205, 45);
+				glEnd();
 
+			// The score-board
+				glColor3f(0.0, 0.0, 0.0);
+				glBegin(GL_POLYGON);
+				glVertex2f(200 , 50);
+				glVertex2f(200,250);
+				glVertex2f(-200,250);
+				glVertex2f(-200, 50);
+				glEnd();
+
+				//TODO: Display level number using text or picture.
+				/*
+
+				glEnable(GL_TEXTURE_2D);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glBindTexture(GL_TEXTURE_2D, texture[5]);
+
+				glBegin(GL_QUADS);
+				glTexCoord2f(0.0, 1.0); glVertex2f(-200, 250);
+				glTexCoord2f(1.0, 1.0); glVertex2f(56, 250);
+				glTexCoord2f(1.0, 0.0); glVertex2f(56, -6);
+				glTexCoord2f(0.0, 0.0); glVertex2f(-200, -6);
+				glEnd();
+				glDisable(GL_TEXTURE_2D);
+				*/
+	    }
 	//Display Player score
 	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
 	    glRasterPos2i(winWidth/2-93,25-winHeight/2+winHeight/4);
@@ -354,33 +392,36 @@ void flyDucks(int wingsUp) {
 
 		if (!duckArray[i].shot == 1) {
 			notShot = 1;
-			thisDuckIsntShot=duckArray[i];
+			thisDuckIsntShot = duckArray[i];
 		}
 	}
 	//Check that the last duck is still on the screen.
 	//If so, draw animation.
 	if (duckArray[numDucksInLevel - 1].distance + 550 <= winWidth) {
-		if (wingsUp % 2==0 && wingsUp<=10) {
+		//This required some hacking around to find the right time to quack the second time.
+		//(Since the .wav file contains two quacks, and we dont want to quack after every wing
+		//flap.
+		if (wingsUp % 2 == 0 && wingsUp <= 10) {
 			loadbmp(texture, "textures/wingsDown.bmp", 1);
-			glutTimerFunc(200, flyDucks, wingsUp+1);
+			glutTimerFunc(200, flyDucks, wingsUp + 1);
 
-		} else if (wingsUp % 2==1 && wingsUp<=10 && wingsUp!=5) {
+		} else if (wingsUp % 2 == 1 && wingsUp <= 10 && wingsUp != 5) {
 			loadbmp(texture, "textures/wingsUp.bmp", 1);
-						glutTimerFunc(200, flyDucks, wingsUp+1);
+			glutTimerFunc(200, flyDucks, wingsUp + 1);
 		} else if (duckArray[numDucksInLevel - 1].distance + 550 <= winWidth) {
 			loadbmp(texture, "textures/quack.bmp", 1);
-			if(wingsUp!=5||gameIsStarting){
-						if (notShot) {
-							if(thisDuckIsntShot.distance + 550 <= winWidth){
-								PlaySound("sounds/quack.wav", NULL, SND_ASYNC | SND_FILENAME);
-							}
-						}
-						gameIsStarting=0;
-						glutTimerFunc(200, flyDucks, 1);
-						}
-						else{
-							glutTimerFunc(200, flyDucks, wingsUp+1);
-						}
+			if (wingsUp != 5 || gameIsStarting) {
+				if (notShot) {
+					if (thisDuckIsntShot.distance + 550 <= winWidth) {
+						PlaySound("sounds/quack.wav", NULL,
+								SND_ASYNC | SND_FILENAME);
+					}
+				}
+				gameIsStarting = 0;
+				glutTimerFunc(200, flyDucks, 1);
+			} else {
+				glutTimerFunc(200, flyDucks, wingsUp + 1);
+			}
 		}
 	}
 }
@@ -421,17 +462,16 @@ void init(void) {
 	loadbmp(texture, "textures/red.bmp", 2);
 	loadbmp(texture, "textures/dead.bmp", 3);
 	loadbmp(texture, "textures/zapper.bmp", 4);
+	//loadbmp(texture, "textures/level1.bmp", 5);
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
-
-	//Play music.
-	//PlaySound("sounds/start.wav", NULL, SND_ASYNC|SND_FILENAME);
 
 	PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
 	glutTimerFunc(7000, startLevel1, 1);
 }
 
 void startLevel1(int nothing){
+	level1IsStarting=0;
 	numDucksInLevel=numDucksInLevel1;
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
