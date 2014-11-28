@@ -1,6 +1,6 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
-
+#include <sstream>
 #include "glaux.h" // for reading bmp files
 #include <stdlib.h>
 #include <stdio.h>
@@ -35,6 +35,7 @@ GLint moving = 0, xBegin = 0, yBegin = 0, coordinate = 1, type = 1,
 GLfloat P = 1.0;
 GLint duckSize = 50;
 GLint style = 1, lightOn = 0, showLight = 1, lightAdjust = 1;
+GLint playerScore=0;
 
 //Lighting substitute lx, ly, lz
 GLfloat position[] = { 1.8, 1.8, 1.5, 1.0 };
@@ -185,26 +186,23 @@ void display(void) {
 			duckArray[i].draw();
 		}
 	}
+	// Draw any dead ducks
 	void drawOneDeadDuck();
 	drawOneDeadDuck();
+
+	//Display Player score
 	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
 	    glRasterPos2i(winWidth/2-100,40-winHeight/2+winHeight/4);
-	    string hey="YOO GUY!!";
-	    std::string s = hey;
+	    std::ostringstream oss;
+	    oss << "Score: " << playerScore;
 	    void * font = GLUT_BITMAP_9_BY_15;
 
-	    for (std::string::iterator i = s.begin(); i != s.end(); ++i)
+	    for (std::string::iterator i = oss.str().begin(); i != oss.str().end(); ++i)
 	    {
 	        char c = *i;
-	        //this does nothing, color is fixed for Bitmaps when calling glRasterPos
-	        //glColor3f(1.0, 0.0, 1.0);
 	        glutBitmapCharacter(font, c);
 	    }
-	    glMatrixMode(GL_MODELVIEW);
-	    glPopMatrix();
-	    glMatrixMode(GL_PROJECTION);
-	    glPopMatrix();
-	    glEnable(GL_TEXTURE_2D);
+
 
 	// Draw gun
 //	myZapper.calcRot();
@@ -261,6 +259,7 @@ void mouseAction(int button, int action, int x, int y) {
 						double dx = (duckArray[i].distance+duckSize - x+winWidth/2), dy = (duckArray[i].height+duckSize-(winHeight/2+winHeight/4)+y);
 						double distance = sqrt((dx * dx + dy * dy));
 						if (distance <= radius && !duckArray[i].shot) {
+							playerScore+=1500;
 							duckArray[i].shot=1;
 							duckArray[i].dying=1;
 							duckIsDying=1;
