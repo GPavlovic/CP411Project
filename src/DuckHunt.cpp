@@ -17,6 +17,10 @@
 #include "Zapper.hpp"
 
 #define numDucksInLevel1 10
+#define numDucksInLevel2 15
+#define numDucksInLevel3 20
+#define numDucksInLevel4 25
+
 
 GLint winWidth = 800, winHeight = 800;
 
@@ -65,14 +69,16 @@ World myWorld;
 GLuint programObject; // GLSL object
 
 // Array to hold the ducks
-Duck duckArray[numDucksInLevel1];
+Duck duckArray[numDucksInLevel4];
 // Array to hold times for launching ducks
-GLfloat launchTimes[numDucksInLevel1];
+GLfloat launchTimes[numDucksInLevel4];
 // Counters for the timer functionk
 //// Time that has passed by
 GLfloat timePassed;
 //// Number of ducks to draw from the array.
 GLint numDucksDrawn=0;
+//Number of ducks in game
+GLint numDucksInLevel=0;
 // Location of the mouse
 GLint mouseXCurr, mouseYCurr;
 
@@ -333,7 +339,7 @@ void incrementDucks(int keepGoing) {
 void generateDucks(int keepGoing) {
 	GLfloat time=launchTimes[numDucksDrawn];
 	numDucksDrawn+=1;
-	if (keepGoing && numDucksDrawn<numDucksInLevel1) {
+	if (keepGoing && numDucksDrawn<numDucksInLevel) {
 		glutTimerFunc(time, generateDucks, 1);
 	}
 }
@@ -343,15 +349,17 @@ void flyDucks(int wingsUp) {
 	//Check if there are any ducks on the screen that have not been shot.
 	//If so, we will play a quacking noise.
 	int notShot = 0;
+	Duck thisDuckIsntShot;
 	for (int i = 0; i < numDucksDrawn; i++) {
 
 		if (!duckArray[i].shot == 1) {
 			notShot = 1;
+			thisDuckIsntShot=duckArray[i];
 		}
 	}
 	//Check that the last duck is still on the screen.
 	//If so, draw animation.
-	if (duckArray[numDucksInLevel1 - 1].distance + 550 <= winWidth) {
+	if (duckArray[numDucksInLevel - 1].distance + 550 <= winWidth) {
 		if (wingsUp % 2==0 && wingsUp<=10) {
 			loadbmp(texture, "textures/wingsDown.bmp", 1);
 			glutTimerFunc(200, flyDucks, wingsUp+1);
@@ -359,11 +367,13 @@ void flyDucks(int wingsUp) {
 		} else if (wingsUp % 2==1 && wingsUp<=10 && wingsUp!=5) {
 			loadbmp(texture, "textures/wingsUp.bmp", 1);
 						glutTimerFunc(200, flyDucks, wingsUp+1);
-		} else if (duckArray[numDucksInLevel1 - 1].distance + 550 <= winWidth) {
+		} else if (duckArray[numDucksInLevel - 1].distance + 550 <= winWidth) {
 			loadbmp(texture, "textures/quack.bmp", 1);
 			if(wingsUp!=5||gameIsStarting){
 						if (notShot) {
-							PlaySound("sounds/quack.wav", NULL, SND_ASYNC | SND_FILENAME);
+							if(thisDuckIsntShot.distance + 550 <= winWidth){
+								PlaySound("sounds/quack.wav", NULL, SND_ASYNC | SND_FILENAME);
+							}
 						}
 						gameIsStarting=0;
 						glutTimerFunc(200, flyDucks, 1);
@@ -422,16 +432,17 @@ void init(void) {
 }
 
 void startLevel1(int nothing){
+	numDucksInLevel=numDucksInLevel1;
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
 
 	// Create random times for ducks to be launched.
-	for(int i = 0; i < numDucksInLevel1; i ++)
+	for(int i = 0; i < numDucksInLevel; i ++)
 		{
 			launchTimes[i] = (rand() % 1000) + 1000;
 		}
 	// Create ducks.
-	for(int i = 0; i < numDucksInLevel1; i ++)
+	for(int i = 0; i < numDucksInLevel; i ++)
 		{
 			duckArray[i].height=(rand() % 280) + 120;
 		}
