@@ -81,6 +81,7 @@ GLuint texture[5];
 vector<unsigned char> texture2[2];
 
 GLint duckIsDying=0;
+void startLevel1();
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	if (!strFileName)
@@ -401,9 +402,14 @@ void init(void) {
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
 
+	startLevel1();
 	//TODO: Implement levels and score.
 	//TODO: Tree? Music? Dog? multi-directional flying? 3D? Ideas?
 
+
+}
+
+void startLevel1(){
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
 
@@ -423,8 +429,6 @@ void init(void) {
 	generateDucks(1);
 	flyDucks(1);
 }
-
-
 
 void mainMenu(GLint option) {
 	switch (option) {
