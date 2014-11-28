@@ -190,9 +190,27 @@ void display(void) {
 	void drawOneDeadDuck();
 	drawOneDeadDuck();
 
+	// The outline of the score-board
+		glColor3f(1.0, 1.0, 1.0);
+		glBegin(GL_POLYGON);
+		glVertex2f(winWidth/2-15 , -winHeight / 4+5);
+		glVertex2f(winWidth/2-15,(-winHeight / 4)+55);
+		glVertex2f(winWidth / 2-125, (-winHeight / 4)+55);
+		glVertex2f(winWidth/2-125, -winHeight / 4+5);
+		glEnd();
+
+	// The score-board
+		glColor3f(0.0, 0.0, 0.0);
+		glBegin(GL_POLYGON);
+		glVertex2f(winWidth/2-20 , -winHeight / 4+10);
+		glVertex2f(winWidth/2-20,(-winHeight / 4)+50);
+		glVertex2f(winWidth / 2-120, (-winHeight / 4)+50);
+		glVertex2f(winWidth/2-120, -winHeight / 4+10);
+		glEnd();
+
 	//Display Player score
 	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
-	    glRasterPos2i(winWidth/2-100,40-winHeight/2+winHeight/4);
+	    glRasterPos2i(winWidth/2-93,25-winHeight/2+winHeight/4);
 	    std::ostringstream oss;
 	    oss << "Score: " << playerScore;
 	    void * font = GLUT_BITMAP_9_BY_15;
