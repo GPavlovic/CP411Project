@@ -163,29 +163,6 @@ void display(void) {
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 
-	// Texture of the grass
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-	// Left side of the screen grass
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, winHeight / 8 + 20, 0.1);
-	glTexCoord2f(1.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.1);
-	glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, 0.1);
-	glTexCoord2f(0.0, 0.0); glVertex3f(-winWidth / 2, 0.0, 0.1);
-	glEnd();
-	// Right side of the screen grass
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.1);
-	glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, winHeight / 8 + 20, 0.1);
-	glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 0.0, 0.1);
-	glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.1);
-	glEnd();
-	glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-
 	// The ground colour of original duck hunt
 	glColor3f(0.55, 0.54, 0.0);
 	glBegin(GL_POLYGON);
@@ -223,6 +200,30 @@ void display(void) {
 	// Draw any dead ducks
 	void drawOneDeadDuck();
 	drawOneDeadDuck();
+
+	// Texture of the grass
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	// Left side of the screen grass
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, 0.1);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-winWidth / 2, 0.0, 0.1);
+	glEnd();
+	// Right side of the screen grass
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 0.0, 0.1);
+	glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.1);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+
 
 	// For the first level show the introscreen
 	if (level1IsStarting) {
