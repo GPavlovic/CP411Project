@@ -1,5 +1,4 @@
-//TODO: Features- Levels. Tree? 3D cube for levels? Music? Dog? multi-directional flying? Ideas?
-//TODO: Design - Load duck flying images only once
+//TODO: Features- Level indicator. Tree? 3D cube for levels? Dog? multi-directional flying? Different ducks?
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <sstream>
@@ -40,7 +39,9 @@ GLint moving = 0, xBegin = 0, yBegin = 0, coordinate = 1, type = 1,
 
 GLfloat P = 1.0;
 GLint duckSize = 50;
+
 GLint style = 1, lightOn = 0, showLight = 1, lightAdjust = 1;
+//The player's overall score.
 GLint playerScore=0;
 
 //Lighting substitute lx, ly, lz
@@ -85,15 +86,18 @@ GLint mouseXCurr, mouseYCurr;
 // Zapper
 Zapper myZapper;
 
-GLuint texture[6];
+GLuint texture[13];
 vector<unsigned char> texture2[2];
 
 GLint duckIsDying=0,gameIsStarting=1;
 
 //Used to indicate to the display function to display the level number.
-GLint level1IsStarting=1, level2IsStarting=1, level3IsStarting=1, level4IsStarting=1;
+GLint level1IsStarting=1, level2IsStarting=1, level3IsStarting=1, level4IsStarting=1,
+		level1Finished=0, level2Finished=0, level3Finished=0, level4Finished=0,levelIsFinished,duckPosition=0, currLevel = 1;
 
 void startLevel(int level);
+void startNextLevel(int level);
+void make_RGBA_texture_from_RGB_pixels( GLubyte *pixels, int width, int height );
 
 bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	if (!strFileName)
@@ -106,11 +110,26 @@ bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	glBindTexture(GL_TEXTURE_2D, textureArray[ID]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, pBitMap->sizeX, pBitMap->sizeY, 0, GL_RGB,
-	GL_UNSIGNED_BYTE, pBitMap->data);
+	make_RGBA_texture_from_RGB_pixels(pBitMap->data,pBitMap->sizeX, pBitMap->sizeY);
 	return true;
 }
+void make_RGBA_texture_from_RGB_pixels( GLubyte *pixels, int width, int height )
+{
+	int texture_size = width*height;
+	GLubyte* RGBA_pixels = new GLubyte[ texture_size*4 ];
+	for ( int i=0; i<texture_size;i++)	{
+		RGBA_pixels[i*4] = pixels[i*3];
+		RGBA_pixels[i*4+1] = pixels[i*3+1];
+		RGBA_pixels[i*4+2] = pixels[i*3+2];
 
+		if ( pixels[i*3+0] == 255 && pixels[i*3+1] == 255 && pixels[i*3+2] == 255 )
+			RGBA_pixels[i*4+3] = 0;
+		else
+			RGBA_pixels[i*4+3] = 255;
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, RGBA_pixels );
+	delete []RGBA_pixels;
+}
 void display(void) {
 
 	glLoadIdentity();
@@ -122,41 +141,27 @@ void display(void) {
 	// Background of the sky
 	glColor3f(0.68, 0.85, 0.9);
     glBegin(GL_POLYGON);
-    glVertex2f(winWidth / 2, 0.0);
-    glVertex2f(winWidth / 2, 3 * winHeight / 4);
-    glVertex2f(-winWidth / 2, 3 * winHeight / 4);
-    glVertex2f(-winWidth / 2, 0.0);
+    glVertex3f(winWidth / 2, 0.0, 0.0);
+	glVertex3f(winWidth / 2, 3 * winHeight / 4, 0.0);
+	glVertex3f(-winWidth / 2, 3 * winHeight / 4, 0.0);
+	glVertex3f(-winWidth / 2, 0.0, 0.0);
     glEnd();
 
-    // TODO(Goran): Potentially fix the tree
-//	glPushMatrix();
-//	glEnable(GL_TEXTURE_2D);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//	glBindTexture(GL_TEXTURE_2D, texture[3]);
-//	glBegin(GL_QUADS);
-//	glTexCoord2f(0.0, 1.0); glVertex2f(-winWidth / 2, 1.71 * winWidth / 4);
-//	glTexCoord2f(1.0, 1.0); glVertex2f(-winWidth / 4, 1.71 * winWidth / 4);
-//	glTexCoord2f(1.0, 0.0); glVertex2f(-winWidth / 4, 0.0);
-//	glTexCoord2f(0.0, 0.0); glVertex2f(-winWidth / 2, 0.0);
-//	glEnd();
-//	glPopMatrix();
-//	glDisable(GL_TEXTURE_2D);
 
-    // TODO(Goran): Potentially fix the bush
-//	glPushMatrix();
-//	glEnable(GL_TEXTURE_2D);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//	glTexImage2D(GL_TEXTURE_2D, 0, 4, 150, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, &texture2[0]);
-//	glBegin(GL_QUADS);
-//	glTexCoord2f(0.0, 1.0); glVertex2f((winWidth / 2) - 112, 136);
-//	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, 136);
-//	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 0.0);
-//	glTexCoord2f(0.0, 0.0); glVertex2f((winWidth / 2) - 112, 0.0);
-//	glEnd();
-//	glPopMatrix();
-//	glDisable(GL_TEXTURE_2D);
+    // The bush
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, texture[9]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex2f((winWidth / 2) - 128, 203);
+	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, 203);
+	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 75.0);
+	glTexCoord2f(0.0, 0.0); glVertex2f((winWidth / 2) - 128, 75.0);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 
 	// Texture of the grass
 	glPushMatrix();
@@ -166,17 +171,17 @@ void display(void) {
 	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	// Left side of the screen grass
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex2f(-winWidth / 2, winHeight / 8 + 20);
-	glTexCoord2f(1.0, 1.0); glVertex2f(0.0, winHeight / 8 + 20);
-	glTexCoord2f(1.0, 0.0); glVertex2f(0.0, 0.0);
-	glTexCoord2f(0.0, 0.0); glVertex2f(-winWidth / 2, 0.0);
+	glTexCoord2f(0.0, 1.0); glVertex3f(-winWidth / 2, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 0.0); glVertex3f(0.0, 0.0, 0.1);
+	glTexCoord2f(0.0, 0.0); glVertex3f(-winWidth / 2, 0.0, 0.1);
 	glEnd();
 	// Right side of the screen grass
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0, 1.0); glVertex2f(0.0, winHeight / 8 + 20);
-	glTexCoord2f(1.0, 1.0); glVertex2f(winWidth / 2, winHeight / 8 + 20);
-	glTexCoord2f(1.0, 0.0); glVertex2f(winWidth / 2, 0.0);
-	glTexCoord2f(0.0, 0.0); glVertex2f(0.0, 0.0);
+	glTexCoord2f(0.0, 1.0); glVertex3f(0.0, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 1.0); glVertex3f(winWidth / 2, winHeight / 8 + 20, 0.1);
+	glTexCoord2f(1.0, 0.0); glVertex3f(winWidth / 2, 0.0, 0.1);
+	glTexCoord2f(0.0, 0.0); glVertex3f(0.0, 0.0, 0.1);
 	glEnd();
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
@@ -184,12 +189,12 @@ void display(void) {
 	// The ground colour of original duck hunt
 	glColor3f(0.55, 0.54, 0.0);
 	glBegin(GL_POLYGON);
-	glVertex2f(winWidth / 2, 0.0);
-	glVertex2f(winWidth / 2, -winHeight / 2);
-	glVertex2f(-winWidth / 2, -winHeight / 2);
-	glVertex2f(-winWidth / 2, 0.0);
+	glVertex3f(winWidth / 2, 0.0, 0.0);
+	glVertex3f(winWidth / 2, -winHeight / 2, 0.0);
+	glVertex3f(-winWidth / 2, -winHeight / 2, 0.0);
+	glVertex3f(-winWidth / 2, 0.0, 0.0);
 	glEnd();
-	glColor3f(0.68, 0.85, 0.9);
+	glColor3f(1, 1, 1);
 
 	// Draw ducks from Duck array, if they are in the range
 	for(int i = 0; i < numDucksDrawn; i ++)
@@ -199,92 +204,118 @@ void display(void) {
 			duckArray[i].draw(0);
 		}
 	}
+
+    // Draw the tree
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, texture[8]);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 1.0); glVertex2f(-winWidth / 2, 1.71 * winWidth / 4 + 85);
+	glTexCoord2f(1.0, 1.0); glVertex2f(-winWidth / 4, 1.71 * winWidth / 4 + 85);
+	glTexCoord2f(1.0, 0.0); glVertex2f(-winWidth / 4, 85.0);
+	glTexCoord2f(0.0, 0.0); glVertex2f(-winWidth / 2, 85.0);
+	glEnd();
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+
 	// Draw any dead ducks
 	void drawOneDeadDuck();
 	drawOneDeadDuck();
 
+	// For the first level show the introscreen
+	if (level1IsStarting) {
+		// The intro outline
+		glColor3f(1.0, 1.0, 1.0);
+		glBegin(GL_POLYGON);
+		glVertex3f(205 ,45, 0.4);
+		glVertex3f(205,255, 0.4);
+		glVertex3f(-205, 255, 0.4);
+		glVertex3f(-205, 45, 0.4);
+		glEnd();
+		// The intro texture
+		glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, texture[7]);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0, 1.0); glVertex3f(-200, 250, 0.4);
+		glTexCoord2f(1.0, 1.0); glVertex3f(200, 250, 0.4);
+		glTexCoord2f(1.0, 0.0); glVertex3f(200, 50, 0.4);
+		glTexCoord2f(0.0, 0.0); glVertex3f(-200, 50, 0.4);
+		glEnd();
+		glPopMatrix();
+		glDisable(GL_TEXTURE_2D);
+	}
+
 	// The outline of the score-board
 		glColor3f(1.0, 1.0, 1.0);
 		glBegin(GL_POLYGON);
-		glVertex2f(winWidth/2-15 , -winHeight / 4+5);
-		glVertex2f(winWidth/2-15,(-winHeight / 4)+55);
-		glVertex2f(winWidth / 2-125, (-winHeight / 4)+55);
-		glVertex2f(winWidth/2-125, -winHeight / 4+5);
+		glVertex3f(winWidth/2-15 , -winHeight / 4+5, 0.2);
+		glVertex3f(winWidth/2-15,(-winHeight / 4)+55, 0.2);
+		glVertex3f(winWidth / 2-125, (-winHeight / 4)+55, 0.2);
+		glVertex3f(winWidth/2-125, -winHeight / 4+5, 0.2);
 		glEnd();
 
 	// The score-board
 		glColor3f(0.0, 0.0, 0.0);
 		glBegin(GL_POLYGON);
-		glVertex2f(winWidth/2-20 , -winHeight / 4+10);
-		glVertex2f(winWidth/2-20,(-winHeight / 4)+50);
-		glVertex2f(winWidth / 2-120, (-winHeight / 4)+50);
-		glVertex2f(winWidth/2-120, -winHeight / 4+10);
+		glVertex3f(winWidth/2-20 , -winHeight / 4+10, 0.3);
+		glVertex3f(winWidth/2-20, (-winHeight / 4)+50, 0.3);
+		glVertex3f(winWidth/2-120, (-winHeight / 4)+50, 0.3);
+		glVertex3f(winWidth/2-120, -winHeight / 4+10, 0.3);
 		glEnd();
-	    if(level1IsStarting){
+
+	    if((level2IsStarting&&level1Finished)||(level3IsStarting&&level2Finished)||(level4IsStarting&&level3Finished)){
 		// Displaying the level number.
 				glColor3f(1.0, 1.0, 1.0);
 				glBegin(GL_POLYGON);
-				glVertex2f(205 ,45);
-				glVertex2f(205,255);
-				glVertex2f(-205, 255);
-				glVertex2f(-205, 45);
+				glVertex3f(205 ,45, 0.4);
+				glVertex3f(205,255, 0.4);
+				glVertex3f(-205, 255, 0.4);
+				glVertex3f(-205, 45, 0.4);
 				glEnd();
 
-			// The score-board
+			// The level-board
 				glPushMatrix();
 				glEnable(GL_TEXTURE_2D);
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glBindTexture(GL_TEXTURE_2D, texture[5]);
+				glBindTexture(GL_TEXTURE_2D, texture[8 + currLevel]);
 				glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 1.0); glVertex2f(-200, 250);
-				glTexCoord2f(1.0, 1.0); glVertex2f(200, 250);
-				glTexCoord2f(1.0, 0.0); glVertex2f(200, 50);
-				glTexCoord2f(0.0, 0.0); glVertex2f(-200, 50);
+				glTexCoord2f(0.0, 1.0); glVertex3f(-200, 250, 0.4);
+				glTexCoord2f(1.0, 1.0); glVertex3f(200, 250, 0.4);
+				glTexCoord2f(1.0, 0.0); glVertex3f(200, 50, 0.4);
+				glTexCoord2f(0.0, 0.0); glVertex3f(-200, 50, 0.4);
 				glEnd();
 				glPopMatrix();
 				glDisable(GL_TEXTURE_2D);
-
-				//TODO: Display level number using text or picture.
-				/*
-
-				glEnable(GL_TEXTURE_2D);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glBindTexture(GL_TEXTURE_2D, texture[5]);
-
-				glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 1.0); glVertex2f(-200, 250);
-				glTexCoord2f(1.0, 1.0); glVertex2f(56, 250);
-				glTexCoord2f(1.0, 0.0); glVertex2f(56, -6);
-				glTexCoord2f(0.0, 0.0); glVertex2f(-200, -6);
-				glEnd();
-				glDisable(GL_TEXTURE_2D);
-				*/
 	    }
 	//Display Player score
-	// First the word "Score:"
-	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
-	glRasterPos2i(winWidth/2 - 93, 35 - winHeight/2 + winHeight/4);
-	std::ostringstream oss1;
-	std::ostringstream oss2;
-	oss1 << "Score: ";
-	oss2 << playerScore;
-	void * font = GLUT_BITMAP_9_BY_15;
+		// First the word "Score:"
+		glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
+		glRasterPos2i(winWidth/2 - 93, 35 - winHeight/2 + winHeight/4);
+		std::ostringstream oss1;
+		std::ostringstream oss2;
+		oss1 << "Score: ";
+		oss2 << playerScore;
+		void * font = GLUT_BITMAP_9_BY_15;
 
-	for (std::string::iterator i = oss1.str().begin(); i != oss1.str().end(); ++i)
-	{
-		char c = *i;
-		glutBitmapCharacter(font, c);
-	}
-	// Now the actual player score
-	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
-	glRasterPos2i(winWidth/2 - 93, 20 - winHeight/2 + winHeight/4);
-	for (std::string::iterator i = oss2.str().begin(); i != oss2.str().end(); ++i)
-	{
-		char c = *i;
-		glutBitmapCharacter(font, c);
-	}
+		for (std::string::iterator i = oss1.str().begin(); i != oss1.str().end(); ++i)
+		{
+			char c = *i;
+			glutBitmapCharacter(font, c);
+		}
+		// Now the actual player score
+		glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
+		glRasterPos2i(winWidth/2 - 93, 20 - winHeight/2 + winHeight/4);
+		for (std::string::iterator i = oss2.str().begin(); i != oss2.str().end(); ++i)
+		{
+			char c = *i;
+			glutBitmapCharacter(font, c);
+		}
 
 	// Draw gun
 	myZapper.updateLoc();
@@ -294,17 +325,18 @@ void display(void) {
 	// Draw crosshair
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_LINES);
-	glVertex2f(mouseXCurr+5, mouseYCurr);
-	glVertex2f(mouseXCurr-5, mouseYCurr);
+	glVertex3f(mouseXCurr+5, mouseYCurr, 0.4);
+	glVertex3f(mouseXCurr-5, mouseYCurr, 0.4);
 	glEnd();
 	glBegin(GL_LINES);
-	glVertex2f(mouseXCurr, mouseYCurr+5);
-	glVertex2f(mouseXCurr, mouseYCurr-5);
+	glVertex3f(mouseXCurr, mouseYCurr+5, 0.4);
+	glVertex3f(mouseXCurr, mouseYCurr-5, 0.4);
 	glEnd();
 
 	glFlush();
 	glutSwapBuffers();
 }
+
 void drawOneDeadDuck() {
 	// Draw ducks from Duck array, if they are in the range
 		for(int i = 0; i < numDucksDrawn; i ++)
@@ -331,24 +363,21 @@ void winReshapeFcn(GLint newWidth, GLint newHeight) {
 
 void mouseAction(int button, int action, int x, int y) {
 	if (button == GLUT_LEFT_BUTTON && action == GLUT_DOWN) {
-
-		//TODO: Goran - Shoot gun
-		//TODO: Add gun audio.
 		for(int i = 0; i < numDucksDrawn; i++) //Find the duck that was shot.
 		{
-			            double radius = sqrt(duckSize*duckSize+duckSize*duckSize); //Calculate Radius.
-						double dx = (duckArray[i].distance+duckSize - x+winWidth/2), dy = (duckArray[i].height+duckSize-(winHeight/2+winHeight/4)+y);
-						double distance = sqrt((dx * dx + dy * dy));
-						if (distance <= radius && !duckArray[i].shot) {
-							playerScore+=1500;
-							duckArray[i].shot=1;
-							duckArray[i].dying=1;
-							duckIsDying=1;
-							void killDucks(int notDeadYet);
-							PlaySound("sounds/shot.wav", NULL, SND_ASYNC | SND_FILENAME);
-							killDucks(1);
-							//TODO: Potentially add falling duck animation.
-						}
+			double radius = sqrt(duckSize*duckSize+duckSize*duckSize); //Calculate Radius.
+			double dx = (duckArray[i].distance+duckSize - x+winWidth/2), dy = (duckArray[i].height+duckSize-(winHeight/2+winHeight/4)+y);
+			double distance = sqrt((dx * dx + dy * dy));
+			if (distance <= radius && !duckArray[i].shot) {
+				playerScore+=1500;
+				duckArray[i].shot=1;
+				duckArray[i].dying=1;
+				duckIsDying=1;
+				void killDucks(int notDeadYet);
+				PlaySound("sounds/shot.wav", NULL, SND_ASYNC | SND_FILENAME);
+				killDucks(1);
+				//TODO: Potentially add falling duck animation.
+			}
 		}
 	}
 
@@ -376,10 +405,36 @@ void reset() {
 
 // Increment positions of the ducks in the array
 void incrementDucks(int keepGoing) {
-	for(int i = 0; i < numDucksDrawn; i ++) //for loop needed for 6 different random heights
-	{
-		if (!duckArray[i].shot==1){
-		duckArray[i].distance+=10;
+	for (int i = 0; i < numDucksDrawn; i++) {
+		if (!duckArray[i].shot == 1 && duckArray[numDucksInLevel - 1].distance <= winWidth / 2 - 10) {
+
+			if (level3Finished) {
+				duckArray[i].distance += 40;
+			} else if (level2Finished) {
+				duckArray[i].distance += 30;
+			} else if (level1Finished) {
+				duckArray[i].distance += 20;
+			} else {
+				duckArray[i].distance += 10;
+			}
+		} else if (duckArray[numDucksInLevel - 1].distance > winWidth / 2 - 10 || duckArray[numDucksInLevel - 1].shot) {
+			if (level3Finished) {
+				level4Finished = 1;
+			} else if (level2Finished) {
+				level3Finished = 1;
+			} else if (level1Finished) {
+				level2Finished = 1;
+			} else {
+				level1Finished = 1;
+			}
+			for (int i = 0; i < numDucksInLevel; i++) {
+				duckArray[i].distance = -winWidth / 2;
+				duckArray[i].height = 0;
+				duckArray[i].shot = 0;
+				duckArray[i].dying = 0;
+			}
+			numDucksDrawn = 0;
+			return;
 		}
 	}
 	glutPostRedisplay();
@@ -417,14 +472,14 @@ void flyDucks(int wingsUp) {
 		//(Since the .wav file contains two quacks, and we dont want to quack after every wing
 		//flap.
 		if (wingsUp % 2 == 0 && wingsUp <= 10) {
-			loadbmp(texture, "textures/wingsDown.bmp", 1);
+			duckPosition=0;
 			glutTimerFunc(200, flyDucks, wingsUp + 1);
 
 		} else if (wingsUp % 2 == 1 && wingsUp <= 10 && wingsUp != 5) {
-			loadbmp(texture, "textures/wingsUp.bmp", 1);
+			duckPosition=1;
 			glutTimerFunc(200, flyDucks, wingsUp + 1);
-		} else if (duckArray[numDucksInLevel - 1].distance + 550 <= winWidth) {
-			loadbmp(texture, "textures/quack.bmp", 1);
+		} else if (duckArray[numDucksInLevel - 1].distance<= winWidth/2) {
+			duckPosition=2;
 			if (wingsUp != 5 || gameIsStarting) {
 				if (notShot) {
 					if (thisDuckIsntShot.distance <= winWidth/2) {
@@ -441,6 +496,7 @@ void flyDucks(int wingsUp) {
 	}
 }
 
+//Create delay for dead duck animation
 void killDucks(int notDeadYet) {
 	if(notDeadYet){
 		glutTimerFunc(300, killDucks, 0);
@@ -449,8 +505,6 @@ void killDucks(int notDeadYet) {
 		duckIsDying=0;
 	}
 }
-
-
 
 void init(void) {
 
@@ -477,20 +531,41 @@ void init(void) {
 	loadbmp(texture, "textures/red.bmp", 2);
 	loadbmp(texture, "textures/dead.bmp", 3);
 	loadbmp(texture, "textures/zapper.bmp", 4);
-	loadbmp(texture, "textures/introScreen.bmp",5);
+	loadbmp(texture, "textures/wingsUp.bmp", 5);
+	loadbmp(texture, "textures/quack.bmp", 6);
+	loadbmp(texture, "textures/introScreen.bmp", 7);
+	loadbmp(texture, "textures/tree.bmp", 8);
+	loadbmp(texture, "textures/bush.bmp", 9);
+	loadbmp(texture, "textures/level2.bmp", 10);
+	loadbmp(texture, "textures/level3.bmp", 11);
+	loadbmp(texture, "textures/level4.bmp", 12);
 	//loadbmp(texture, "textures/level1.bmp", 5);
-//	loadbmp(texture, "textures/tree.bmp", 3);
-//	loadbmp(texture, "textures/bush.bmp", 4);
 
 	PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
-
+	//Start level 1
 	numDucksInLevel=numDucksInLevel1;
 	glutTimerFunc(7000, startLevel, 1);
 }
 
 void startLevel(int level){
+	currLevel++;
 	//check which level it is.
-	level1IsStarting=0;
+	if (level == 1) {
+		level1IsStarting = 0;
+		numDucksInLevel=numDucksInLevel1;
+	} else if (level == 2) {
+		level2IsStarting = 0;
+		numDucksInLevel=numDucksInLevel2;
+	} else if (level == 3) {
+		level3IsStarting = 0;
+		numDucksInLevel=numDucksInLevel3;
+	} else if (level == 4) {
+		level4IsStarting = 0;
+		numDucksInLevel=numDucksInLevel4;
+	} else {
+		//Exit screen
+		exit(0);
+	}
 	// This function runs through duck array and increments x value of duck
 	incrementDucks(1);
 	// Create random times for ducks to be launched.
@@ -505,12 +580,33 @@ void startLevel(int level){
 		}
 	generateDucks(1);
 	flyDucks(1);
-	//TODO: Implement next level.
-	//Check which level it is.
-	//level2IsStarting=0;
-	//numDucksInLevel=numDucksInLevel2;
-	//glutTimerFunc(7000, startLevel2, 1);
+	startNextLevel(level);
 }
+
+void startNextLevel(int level) {
+	if (level == 1) {
+		levelIsFinished=level1Finished;
+	} else if (level == 2) {
+		levelIsFinished=level2Finished;
+	} else if (level == 3) {
+		levelIsFinished=level3Finished;
+	} else if (level == 4) {
+		levelIsFinished=level4Finished;
+	} else {
+		//Exit screen
+	}
+	if(!levelIsFinished){
+		glutTimerFunc(40, startNextLevel, level);
+	}
+	else{
+		if(level!=4){
+			PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
+		}
+		glutTimerFunc(7000, startLevel, level + 1);
+
+	}
+}
+
 
 void mainMenu(GLint option) {
 	switch (option) {

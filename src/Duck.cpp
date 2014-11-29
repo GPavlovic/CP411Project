@@ -1,7 +1,7 @@
 #include "Duck.hpp"
 
-extern GLint winWidth, winHeight;
-extern GLuint texture[4];
+extern GLint winWidth, winHeight, duckPosition;
+extern GLuint texture[9];
 extern Duck duckArray[10];
 
 Duck::Duck() {
@@ -18,9 +18,13 @@ void Duck::draw(int dead){
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	if(dead)
-		glBindTexture(GL_TEXTURE_2D, texture[3]);
+		glBindTexture(GL_TEXTURE_2D, texture[3]); //Draw shot duck
+	else if (duckPosition==1)
+		glBindTexture(GL_TEXTURE_2D, texture[5]); //Draw flying duck
+	else if(duckPosition==2)
+		glBindTexture(GL_TEXTURE_2D, texture[6]); //Draw quacking duck
 	else
-	    glBindTexture(GL_TEXTURE_2D, texture[1]);
+		glBindTexture(GL_TEXTURE_2D, texture[1]); //Draw coasting duck
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0, 1.0); glVertex2f(this->distance, 100 + this->height);

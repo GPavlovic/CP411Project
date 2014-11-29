@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 extern GLint winWidth, winHeight;
-extern GLuint texture[6];
+extern GLuint texture[13];
 extern GLint mouseXCurr, mouseYCurr;
 
 Zapper::Zapper() {
