@@ -85,7 +85,7 @@ GLint mouseXCurr, mouseYCurr;
 // Zapper
 Zapper myZapper;
 
-GLuint texture[5];
+GLuint texture[6];
 vector<unsigned char> texture2[2];
 
 GLint duckIsDying=0,gameIsStarting=1;
@@ -231,13 +231,19 @@ void display(void) {
 				glEnd();
 
 			// The score-board
-				glColor3f(0.0, 0.0, 0.0);
-				glBegin(GL_POLYGON);
-				glVertex2f(200 , 50);
-				glVertex2f(200,250);
-				glVertex2f(-200,250);
-				glVertex2f(-200, 50);
+				glPushMatrix();
+				glEnable(GL_TEXTURE_2D);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glBindTexture(GL_TEXTURE_2D, texture[5]);
+				glBegin(GL_QUADS);
+				glTexCoord2f(0.0, 1.0); glVertex2f(-200, 250);
+				glTexCoord2f(1.0, 1.0); glVertex2f(200, 250);
+				glTexCoord2f(1.0, 0.0); glVertex2f(200, 50);
+				glTexCoord2f(0.0, 0.0); glVertex2f(-200, 50);
 				glEnd();
+				glPopMatrix();
+				glDisable(GL_TEXTURE_2D);
 
 				//TODO: Display level number using text or picture.
 				/*
@@ -257,18 +263,28 @@ void display(void) {
 				*/
 	    }
 	//Display Player score
+	// First the word "Score:"
 	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
-	    glRasterPos2i(winWidth/2-93,25-winHeight/2+winHeight/4);
-	    std::ostringstream oss;
-	    oss << "Score: " << playerScore;
-	    void * font = GLUT_BITMAP_9_BY_15;
+	glRasterPos2i(winWidth/2 - 93, 35 - winHeight/2 + winHeight/4);
+	std::ostringstream oss1;
+	std::ostringstream oss2;
+	oss1 << "Score: ";
+	oss2 << playerScore;
+	void * font = GLUT_BITMAP_9_BY_15;
 
-	    for (std::string::iterator i = oss.str().begin(); i != oss.str().end(); ++i)
-	    {
-	        char c = *i;
-	        glutBitmapCharacter(font, c);
-	    }
-
+	for (std::string::iterator i = oss1.str().begin(); i != oss1.str().end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	// Now the actual player score
+	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
+	glRasterPos2i(winWidth/2 - 93, 20 - winHeight/2 + winHeight/4);
+	for (std::string::iterator i = oss2.str().begin(); i != oss2.str().end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
 
 	// Draw gun
 	myZapper.updateLoc();
@@ -461,6 +477,7 @@ void init(void) {
 	loadbmp(texture, "textures/red.bmp", 2);
 	loadbmp(texture, "textures/dead.bmp", 3);
 	loadbmp(texture, "textures/zapper.bmp", 4);
+	loadbmp(texture, "textures/introScreen.bmp",5);
 	//loadbmp(texture, "textures/level1.bmp", 5);
 //	loadbmp(texture, "textures/tree.bmp", 3);
 //	loadbmp(texture, "textures/bush.bmp", 4);
