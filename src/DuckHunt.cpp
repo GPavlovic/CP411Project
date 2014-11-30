@@ -1,4 +1,4 @@
-//TODO: Features- 3D cube for levels? Dog? multi-directional flying? Different ducks?
+//TODO: Possible features- Dog? 3D cube for levels? multi-directional flying? Different ducks?
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <sstream>
@@ -386,8 +386,6 @@ void mouseAction(int button, int action, int x, int y) {
 				void killDucks(int notDeadYet);
 				PlaySound("sounds/shot.wav", NULL, SND_ASYNC | SND_FILENAME);
 				killDucks(1);
-				//TODO: Potentially add falling duck animation.
-
 			}
 		}
 	}
@@ -602,6 +600,7 @@ void startLevel(int level){
 		level4IsStarting = 0;
 		numDucksInLevel=numDucksInLevel4;
 	} else {
+		//TODO: Display player's final score.
 		//Exit screen
 		exit(0);
 	}
@@ -663,7 +662,7 @@ void mainMenu(GLint option) {
 
 void menu() {
 	glutCreateMenu(mainMenu);      // Create main pop-up menu.
-	// Possible game options, like timing of duck launches or something
+	//TODO: Possible game options, like timing of duck launches or something
 	glutAddMenuEntry(" Reset ", 1);
 	glutAddMenuEntry(" Quit", 2);
 }
