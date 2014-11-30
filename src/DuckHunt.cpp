@@ -437,6 +437,7 @@ void incrementDucks(int keepGoing) {
 			} else {
 				level1Finished = 1;
 			}
+			//TODO:Create delay for ducks to fall off screen before next level begins
 			//Clear the duck array to prepare for next level.
 			for (int i = 0; i < numDucksInLevel; i++) {
 				duckArray[i].distance = -winWidth / 2;
@@ -516,13 +517,34 @@ void killDucks(int notDeadYet) {
 	else if(notDeadYet==2){
 		//Fall left
 		duckIsDying=2;
-		glutTimerFunc(300, killDucks, 3);
+		glutTimerFunc(150, killDucks, 3);
 	}
 	else if(notDeadYet==3){
 		duckIsDying=3;
 		//Fall right
-		glutTimerFunc(300, killDucks, 4);
+		glutTimerFunc(150, killDucks, 4);
 	}
+	else if(notDeadYet==4){
+		duckIsDying=2;
+		//Fall right
+		glutTimerFunc(150, killDucks, 5);
+	}
+	else if(notDeadYet==5){
+		duckIsDying=3;
+		//Fall right
+		glutTimerFunc(150, killDucks, 6);
+	}
+	else if(notDeadYet==6){
+		duckIsDying=2;
+		//Fall right
+		glutTimerFunc(150, killDucks, 7);
+	}
+	else if(notDeadYet==7){
+		duckIsDying=3;
+		//Fall right
+		glutTimerFunc(150, killDucks, 8);
+	}
+
 	else{
 		duckIsDying=0;
 	}
@@ -532,12 +554,12 @@ void killDucks(int notDeadYet) {
 // Make any shot duck "fall" into the grass.
 void fallingDucks(int keepGoing) {
 	for (int i = 0; i < numDucksDrawn; i++) {
-		if (duckArray[i].dying==1&&duckArray[i].shot==1 &&duckArray[i].height <= winHeight/2+10) {
+		if (duckArray[i].dying==1&&duckArray[i].shot==1 &&duckArray[i].height >= -winHeight/2) {
 				duckArray[i].height-= 10;
 		}
 	}
 	glutPostRedisplay();
-	if (keepGoing) {
+	if(!(level2IsStarting&&level1Finished)||(level3IsStarting&&level2Finished)||(level4IsStarting&&level3Finished)){
 		glutTimerFunc(40, fallingDucks, 1);
 	}
 }
