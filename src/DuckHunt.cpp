@@ -15,10 +15,10 @@
 #include "Duck.hpp"
 #include "Zapper.hpp"
 
-#define numDucksInLevel1 10
-#define numDucksInLevel2 15
-#define numDucksInLevel3 20
-#define numDucksInLevel4 25
+#define numDucksInLevel1 1
+#define numDucksInLevel2 1
+#define numDucksInLevel3 1
+#define numDucksInLevel4 1
 
 
 GLint winWidth = 800, winHeight = 800;
@@ -86,14 +86,14 @@ GLint mouseXCurr, mouseYCurr;
 // Zapper
 Zapper myZapper;
 
-GLuint texture[15];
+GLuint texture[16];
 vector<unsigned char> texture2[2];
 
 GLint duckIsDying=0,gameIsStarting=1;
 
 //Used to indicate to the display function to display the level number.
 GLint level1IsStarting=1, level2IsStarting=1, level3IsStarting=1, level4IsStarting=1,
-		level1Finished=0, level2Finished=0, level3Finished=0, level4Finished=0,levelIsFinished,duckPosition=0, currLevel = 1;
+		level1Finished=0, level2Finished=0, level3Finished=0, level4Finished=0,levelIsFinished,duckPosition=0, currLevel = 1, endOfGame = 0;
 
 void startLevel(int level);
 void startNextLevel(int level);
@@ -294,29 +294,66 @@ void display(void) {
 				glPopMatrix();
 				glDisable(GL_TEXTURE_2D);
 	    }
-	//Display Player score
-		// First the word "Score:"
-		glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
-		glRasterPos2i(winWidth/2 - 93, 35 - winHeight/2 + winHeight/4);
-		std::ostringstream oss1;
-		std::ostringstream oss2;
-		oss1 << "Score: ";
-		oss2 << playerScore;
-		void * font = GLUT_BITMAP_9_BY_15;
 
-		for (std::string::iterator i = oss1.str().begin(); i != oss1.str().end(); ++i)
-		{
-			char c = *i;
-			glutBitmapCharacter(font, c);
-		}
-		// Now the actual player score
-		glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
-		glRasterPos2i(winWidth/2 - 93, 20 - winHeight/2 + winHeight/4);
-		for (std::string::iterator i = oss2.str().begin(); i != oss2.str().end(); ++i)
-		{
-			char c = *i;
-			glutBitmapCharacter(font, c);
-		}
+	    if (endOfGame) {
+	    	// The level board outline
+			glColor3f(1.0, 1.0, 1.0);
+			glBegin(GL_POLYGON);
+			glVertex3f(205 ,45, 0.4);
+			glVertex3f(205,255, 0.4);
+			glVertex3f(-205, 255, 0.4);
+			glVertex3f(-205, 45, 0.4);
+			glEnd();
+			// The level board
+			glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glBindTexture(GL_TEXTURE_2D, texture[15]);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0, 1.0); glVertex3f(-200, 250, 0.4);
+			glTexCoord2f(1.0, 1.0); glVertex3f(200, 250, 0.4);
+			glTexCoord2f(1.0, 0.0); glVertex3f(200, 50, 0.4);
+			glTexCoord2f(0.0, 0.0); glVertex3f(-200, 50, 0.4);
+			glEnd();
+			glPopMatrix();
+			glDisable(GL_TEXTURE_2D);
+
+			// Print the players final score
+			std::ostringstream score;
+			score << playerScore;
+			glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
+			glRasterPos2i(0, 100);
+			void * font = GLUT_BITMAP_9_BY_15;
+			for (std::string::iterator i = score.str().begin(); i != score.str().end(); ++i)
+			{
+				char c = *i;
+				glutBitmapCharacter(font, c);
+			}
+	    }
+	//Display Player score
+	// First the word "Score:"
+	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
+	glRasterPos2i(winWidth/2 - 93, 35 - winHeight/2 + winHeight/4);
+	std::ostringstream oss1;
+	std::ostringstream oss2;
+	oss1 << "Score: ";
+	oss2 << playerScore;
+	void * font = GLUT_BITMAP_9_BY_15;
+
+	for (std::string::iterator i = oss1.str().begin(); i != oss1.str().end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	// Now the actual player score
+	glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
+	glRasterPos2i(winWidth/2 - 93, 20 - winHeight/2 + winHeight/4);
+	for (std::string::iterator i = oss2.str().begin(); i != oss2.str().end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
 
 	// Draw gun
 	myZapper.updateLoc();
@@ -598,6 +635,7 @@ void init(void) {
 	loadbmp(texture, "textures/level4.bmp", 12);
 	loadbmp(texture, "textures/falling1.bmp", 13);
 	loadbmp(texture, "textures/falling2.bmp", 14);
+	loadbmp(texture, "textures/endScreen.bmp", 15);
 	//loadbmp(texture, "textures/level1.bmp", 5);
 
 	PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
@@ -623,26 +661,28 @@ void startLevel(int level){
 		numDucksInLevel=numDucksInLevel4;
 	} else {
 		//TODO: Display player's final score.
-		//Exit screen
-		exit(0);
+		endOfGame = 1;
+		glutPostRedisplay();
 	}
-	// This function runs through duck array and increments x value of duck
-	incrementDucks(1);
-	// Create random times for ducks to be launched.
-	for(int i = 0; i < numDucksInLevel; i ++)
-		{
-			launchTimes[i] = (rand() % 1000) + 1000;
-		}
-	// Create ducks.
-	for(int i = 0; i < numDucksInLevel; i ++)
-		{
-			duckArray[i].height=(rand() % 280) + 120;
-		}
-	generateDucks(1);
-	flyDucks(1);
-	void fallingDucks(int keepGoing);
-	fallingDucks(1);
-	startNextLevel(level);
+	if (!endOfGame) {
+		// This function runs through duck array and increments x value of duck
+		incrementDucks(1);
+		// Create random times for ducks to be launched.
+		for(int i = 0; i < numDucksInLevel; i ++)
+			{
+				launchTimes[i] = (rand() % 1000) + 1000;
+			}
+		// Create ducks.
+		for(int i = 0; i < numDucksInLevel; i ++)
+			{
+				duckArray[i].height=(rand() % 280) + 120;
+			}
+		generateDucks(1);
+		flyDucks(1);
+		void fallingDucks(int keepGoing);
+		fallingDucks(1);
+		startNextLevel(level);
+	}
 }
 
 void startNextLevel(int level) {
