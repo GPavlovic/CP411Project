@@ -1,4 +1,4 @@
-//TODO: Features- Level indicator. Tree? 3D cube for levels? Dog? multi-directional flying? Different ducks?
+//TODO: Features- 3D cube for levels? Dog? multi-directional flying? Different ducks?
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include <sstream>
@@ -86,7 +86,7 @@ GLint mouseXCurr, mouseYCurr;
 // Zapper
 Zapper myZapper;
 
-GLuint texture[13];
+GLuint texture[15];
 vector<unsigned char> texture2[2];
 
 GLint duckIsDying=0,gameIsStarting=1;
@@ -163,14 +163,6 @@ void display(void) {
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 
-	// The ground colour of original duck hunt
-	glColor3f(0.55, 0.54, 0.0);
-	glBegin(GL_POLYGON);
-	glVertex3f(winWidth / 2, 0.0, 0.0);
-	glVertex3f(winWidth / 2, -winHeight / 2, 0.0);
-	glVertex3f(-winWidth / 2, -winHeight / 2, 0.0);
-	glVertex3f(-winWidth / 2, 0.0, 0.0);
-	glEnd();
 	glColor3f(1, 1, 1);
 
 	// Draw ducks from Duck array, if they are in the range
@@ -201,6 +193,14 @@ void display(void) {
 	void drawOneDeadDuck();
 	drawOneDeadDuck();
 
+	// The ground colour of original duck hunt
+	glColor3f(0.55, 0.54, 0.0);
+	glBegin(GL_POLYGON);
+	glVertex3f(winWidth / 2, 0.0, 0.0);
+	glVertex3f(winWidth / 2, -winHeight / 2, 0.0);
+	glVertex3f(-winWidth / 2, -winHeight / 2, 0.0);
+	glVertex3f(-winWidth / 2, 0.0, 0.0);
+	glEnd();
 	// Texture of the grass
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
@@ -339,15 +339,24 @@ void display(void) {
 }
 
 void drawOneDeadDuck() {
-	// Draw ducks from Duck array, if they are in the range
+	// Draw dead ducks from Duck array, if they are in the range.
 		for(int i = 0; i < numDucksDrawn; i ++)
 		{
 			if(duckArray[i].dying==1&&duckArray[i].shot==1){
 				if(duckIsDying==1){
+					//Shot
 					duckArray[i].draw(1);
-					return;
+				}
+				else if(duckIsDying==2){
+					//Falling right
+					duckArray[i].draw(2);
+				}
+				else if(duckIsDying==3){
+					//Falling left
+					duckArray[i].draw(3);
 				}
 				else{
+					//Off screen
 					duckArray[i].dying=0;
 				}
 			}
@@ -378,6 +387,7 @@ void mouseAction(int button, int action, int x, int y) {
 				PlaySound("sounds/shot.wav", NULL, SND_ASYNC | SND_FILENAME);
 				killDucks(1);
 				//TODO: Potentially add falling duck animation.
+
 			}
 		}
 	}
@@ -408,7 +418,7 @@ void reset() {
 void incrementDucks(int keepGoing) {
 	for (int i = 0; i < numDucksDrawn; i++) {
 		if (!duckArray[i].shot == 1 && duckArray[numDucksInLevel - 1].distance <= winWidth / 2 - 10) {
-
+			//Increment x position of duck. Ducks get faster after each level.
 			if (level3Finished) {
 				duckArray[i].distance += 40;
 			} else if (level2Finished) {
@@ -419,6 +429,7 @@ void incrementDucks(int keepGoing) {
 				duckArray[i].distance += 10;
 			}
 		} else if (duckArray[numDucksInLevel - 1].distance > winWidth / 2 - 10 || duckArray[numDucksInLevel - 1].shot) {
+			//The last duck has left the screen or has been shot. The level is over.
 			if (level3Finished) {
 				level4Finished = 1;
 			} else if (level2Finished) {
@@ -428,6 +439,7 @@ void incrementDucks(int keepGoing) {
 			} else {
 				level1Finished = 1;
 			}
+			//Clear the duck array to prepare for next level.
 			for (int i = 0; i < numDucksInLevel; i++) {
 				duckArray[i].distance = -winWidth / 2;
 				duckArray[i].height = 0;
@@ -497,16 +509,40 @@ void flyDucks(int wingsUp) {
 	}
 }
 
-//Create delay for dead duck animation
+//Create delays for dead duck animation
 void killDucks(int notDeadYet) {
-	if(notDeadYet){
-		glutTimerFunc(300, killDucks, 0);
+	if(notDeadYet==1){
+		//Shot
+		glutTimerFunc(200, killDucks, 2);
+	}
+	else if(notDeadYet==2){
+		//Fall left
+		duckIsDying=2;
+		glutTimerFunc(300, killDucks, 3);
+	}
+	else if(notDeadYet==3){
+		duckIsDying=3;
+		//Fall right
+		glutTimerFunc(300, killDucks, 4);
 	}
 	else{
 		duckIsDying=0;
 	}
 }
 
+
+// Make any shot duck "fall" into the grass.
+void fallingDucks(int keepGoing) {
+	for (int i = 0; i < numDucksDrawn; i++) {
+		if (duckArray[i].dying==1&&duckArray[i].shot==1 &&duckArray[i].height <= winHeight/2+10) {
+				duckArray[i].height-= 10;
+		}
+	}
+	glutPostRedisplay();
+	if (keepGoing) {
+		glutTimerFunc(40, fallingDucks, 1);
+	}
+}
 void init(void) {
 
 	myWorld.myLight->SetLight(1.8, 1.8, 1.5, 1.0);
@@ -540,6 +576,8 @@ void init(void) {
 	loadbmp(texture, "textures/level2.bmp", 10);
 	loadbmp(texture, "textures/level3.bmp", 11);
 	loadbmp(texture, "textures/level4.bmp", 12);
+	loadbmp(texture, "textures/falling1.bmp", 13);
+	loadbmp(texture, "textures/falling2.bmp", 14);
 	//loadbmp(texture, "textures/level1.bmp", 5);
 
 	PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
@@ -581,6 +619,8 @@ void startLevel(int level){
 		}
 	generateDucks(1);
 	flyDucks(1);
+	void fallingDucks(int keepGoing);
+	fallingDucks(1);
 	startNextLevel(level);
 }
 
