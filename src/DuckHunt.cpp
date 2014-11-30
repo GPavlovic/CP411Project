@@ -15,11 +15,10 @@
 #include "Duck.hpp"
 #include "Zapper.hpp"
 
-#define numDucksInLevel1 1
-#define numDucksInLevel2 1
-#define numDucksInLevel3 1
-#define numDucksInLevel4 1
-
+#define numDucksInLevel1 10
+#define numDucksInLevel2 15
+#define numDucksInLevel3 20
+#define numDucksInLevel4 25
 
 GLint winWidth = 800, winHeight = 800;
 
@@ -587,7 +586,6 @@ void killDucks(int notDeadYet) {
 	}
 }
 
-
 // Make any shot duck "fall" into the grass.
 void fallingDucks(int keepGoing) {
 	for (int i = 0; i < numDucksDrawn; i++) {
@@ -596,10 +594,9 @@ void fallingDucks(int keepGoing) {
 		}
 	}
 	glutPostRedisplay();
-	if(!(level2IsStarting&&level1Finished)||(level3IsStarting&&level2Finished)||(level4IsStarting&&level3Finished)){
-		glutTimerFunc(40, fallingDucks, 1);
-	}
+	glutTimerFunc(40, fallingDucks, 1);
 }
+
 void init(void) {
 
 	myWorld.myLight->SetLight(1.8, 1.8, 1.5, 1.0);
@@ -638,6 +635,8 @@ void init(void) {
 	loadbmp(texture, "textures/endScreen.bmp", 15);
 	//loadbmp(texture, "textures/level1.bmp", 5);
 
+	void fallingDucks(int keepGoing);
+	fallingDucks(1);
 	PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
 	//Start level 1
 	numDucksInLevel=numDucksInLevel1;
@@ -679,8 +678,6 @@ void startLevel(int level){
 			}
 		generateDucks(1);
 		flyDucks(1);
-		void fallingDucks(int keepGoing);
-		fallingDucks(1);
 		startNextLevel(level);
 	}
 }
