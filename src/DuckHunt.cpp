@@ -16,10 +16,10 @@
 #include "Duck.hpp"
 #include "Zapper.hpp"
 
-#define numDucksInLevel1 2
-#define numDucksInLevel2 2
-#define numDucksInLevel3 2
-#define numDucksInLevel4 2
+#define numDucksInLevel1 10
+#define numDucksInLevel2 15
+#define numDucksInLevel3 20
+#define numDucksInLevel4 25
 
 GLint winWidth = 800, winHeight = 800;
 
