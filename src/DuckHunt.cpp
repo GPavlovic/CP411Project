@@ -322,8 +322,8 @@ void display(void) {
 			std::ostringstream score;
 			score << playerScore;
 			glColor3f(1.0f, 1.0f, 1.0f);//needs to be called before RasterPos
-			glRasterPos2i(0, 100);
-			void * font = GLUT_BITMAP_9_BY_15;
+			glRasterPos2i(-25, 100);
+			void * font = GLUT_BITMAP_TIMES_ROMAN_24;
 			for (std::string::iterator i = score.str().begin(); i != score.str().end(); ++i)
 			{
 				char c = *i;
