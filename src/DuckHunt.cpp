@@ -15,10 +15,10 @@
 #include "Duck.hpp"
 #include "Zapper.hpp"
 
-#define numDucksInLevel1 10
-#define numDucksInLevel2 15
-#define numDucksInLevel3 20
-#define numDucksInLevel4 25
+#define numDucksInLevel1 2
+#define numDucksInLevel2 2
+#define numDucksInLevel3 2
+#define numDucksInLevel4 2
 
 GLint winWidth = 800, winHeight = 800;
 
@@ -112,6 +112,7 @@ bool loadbmp(UINT textureArray[], LPSTR strFileName, int ID) {
 	make_RGBA_texture_from_RGB_pixels(pBitMap->data,pBitMap->sizeX, pBitMap->sizeY);
 	return true;
 }
+
 void make_RGBA_texture_from_RGB_pixels( GLubyte *pixels, int width, int height )
 {
 	int texture_size = width*height;
@@ -129,6 +130,7 @@ void make_RGBA_texture_from_RGB_pixels( GLubyte *pixels, int width, int height )
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, RGBA_pixels );
 	delete []RGBA_pixels;
 }
+
 void display(void) {
 
 	glLoadIdentity();
@@ -473,7 +475,6 @@ void incrementDucks(int keepGoing) {
 			} else {
 				level1Finished = 1;
 			}
-			//TODO:Create delay for ducks to fall off screen before next level begins
 			//Clear the duck array to prepare for next level.
 			for (int i = 0; i < numDucksInLevel; i++) {
 				duckArray[i].distance = -winWidth / 2;
@@ -493,8 +494,8 @@ void incrementDucks(int keepGoing) {
 
 // Put the ducks into the game
 void generateDucks(int keepGoing) {
-	GLfloat time=launchTimes[numDucksDrawn];
-	numDucksDrawn+=1;
+	GLfloat time = launchTimes[numDucksDrawn];
+	numDucksDrawn += 1;
 	if (keepGoing && numDucksDrawn<numDucksInLevel) {
 		glutTimerFunc(time, generateDucks, 1);
 	}
@@ -589,7 +590,7 @@ void killDucks(int notDeadYet) {
 // Make any shot duck "fall" into the grass.
 void fallingDucks(int keepGoing) {
 	for (int i = 0; i < numDucksDrawn; i++) {
-		if (duckArray[i].dying==1&&duckArray[i].shot==1 &&duckArray[i].height >= -winHeight/2) {
+		if (duckArray[i].dying==1 && duckArray[i].shot==1 && duckArray[i].height >= -winHeight/2) {
 				duckArray[i].height-= 10;
 		}
 	}
@@ -659,7 +660,7 @@ void startLevel(int level){
 		level4IsStarting = 0;
 		numDucksInLevel=numDucksInLevel4;
 	} else {
-		//TODO: Display player's final score.
+		// Display player's final score.
 		endOfGame = 1;
 		glutPostRedisplay();
 	}
@@ -667,15 +668,13 @@ void startLevel(int level){
 		// This function runs through duck array and increments x value of duck
 		incrementDucks(1);
 		// Create random times for ducks to be launched.
-		for(int i = 0; i < numDucksInLevel; i ++)
-			{
-				launchTimes[i] = (rand() % 1000) + 1000;
-			}
+		for(int i = 0; i < numDucksInLevel; i ++) {
+			launchTimes[i] = (rand() % 1000) + 1000;
+		}
 		// Create ducks.
-		for(int i = 0; i < numDucksInLevel; i ++)
-			{
-				duckArray[i].height=(rand() % 280) + 120;
-			}
+		for(int i = 0; i < numDucksInLevel; i ++) {
+			duckArray[i].height=(rand() % 280) + 120;
+		}
 		generateDucks(1);
 		flyDucks(1);
 		startNextLevel(level);
@@ -698,11 +697,10 @@ void startNextLevel(int level) {
 		glutTimerFunc(40, startNextLevel, level);
 	}
 	else{
-		if(level!=4){
+		if(level != 4){
 			PlaySound("sounds/start.wav", NULL, SND_ASYNC | SND_FILENAME);
 		}
 		glutTimerFunc(7000, startLevel, level + 1);
-
 	}
 }
 
