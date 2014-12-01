@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include <iostream>
 #include <Windows.h>
 #include <MMSystem.h>
@@ -449,6 +450,25 @@ void reset() {
 
 	glutPostRedisplay();
 }
+time_t startTime, nowTime, differTime;
+
+void killTime(int i) {
+	time(&nowTime);
+	differTime = difftime(nowTime, startTime);
+	if (differTime >= 4) {
+		//Clear the duck array to prepare for next level.
+		for (int i = 0; i < numDucksInLevel; i++) {
+			duckArray[i].distance = -winWidth / 2;
+			duckArray[i].height = 0;
+			duckArray[i].shot = 0;
+			duckArray[i].dying = 0;
+		}
+		numDucksDrawn = 0;
+		return;
+	} else {
+		glutTimerFunc(40, killTime, 1);
+	}
+}
 
 // Increment positions of the ducks in the array
 void incrementDucks(int keepGoing) {
@@ -475,14 +495,8 @@ void incrementDucks(int keepGoing) {
 			} else {
 				level1Finished = 1;
 			}
-			//Clear the duck array to prepare for next level.
-			for (int i = 0; i < numDucksInLevel; i++) {
-				duckArray[i].distance = -winWidth / 2;
-				duckArray[i].height = 0;
-				duckArray[i].shot = 0;
-				duckArray[i].dying = 0;
-			}
-			numDucksDrawn = 0;
+			time(&startTime);
+			glutTimerFunc(40, killTime, 1);
 			return;
 		}
 	}
